@@ -1,3 +1,4 @@
+{% extends 'edc_base/base.html' %}
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -13,7 +14,14 @@
   <title>Django Calendar App</title>
 
   <style>
-    .calendar {
+  </style>
+</head>
+<body>
+
+ {% block extra-styles %}
+
+ <style>
+       .calendar {
     width: 98%;
     margin: auto;
     font-size: 13px;
@@ -83,12 +91,14 @@
       padding: 5px;
       width: 100%;
   }
-  </style>
-</head>
-<body>
 
-  {% block content %}
-  {% endblock %}
+ </style>
+ 
+ {% endblock extra-styles %}
+
+{% block main %}
+  {% block content %}{% endblock content %}
+{% endblock main %}
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->

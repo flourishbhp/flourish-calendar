@@ -7,13 +7,18 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import generic
 from django.utils.safestring import mark_safe
+from edc_base.view_mixins import EdcBaseViewMixin
+from edc_navbar import NavbarViewMixin
 
 from .forms import EventForm
 from .models import *
 from .utils import Calendar
 
 
-class CalendarView(generic.ListView):
+class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
+
+    navbar_name = 'flourish_calendar'
+    navbar_selected_item = 'calendar'
     model = Event
     template_name = 'flourish_calendar/calendar.html'
 
