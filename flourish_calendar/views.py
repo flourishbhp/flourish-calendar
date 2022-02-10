@@ -15,7 +15,7 @@ from .utils import Calendar
 
 class CalendarView(generic.ListView):
     model = Event
-    template_name = 'calendar_dashboard/calendar.html'
+    template_name = 'flourish_calendar/calendar.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,5 +68,5 @@ def event(request, event_id=None):
     form = EventForm(request.POST or None, instance=instance)
     if request.POST and form.is_valid():
         form.save()
-        return redirect('calendar_dashboard:calendar')
-    return render(request, 'calendar_dashboard/event.html', {'form': form})
+        return redirect('flourish_calendar:calendar')
+    return render(request, 'flourish_calendar/event.html', {'form': form})

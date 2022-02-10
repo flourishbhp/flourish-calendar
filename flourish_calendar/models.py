@@ -10,5 +10,5 @@ class Event(models.Model):
 
     @property
     def get_html_url(self):
-        url = reverse('calendar_dashboard:event_edit', args=(self.id,))
+        url = reverse('flourish_calendar:event_edit', args=(self.id,))
         return f'<a href="{url}"> {self.title} </a>'
