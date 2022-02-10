@@ -21,7 +21,7 @@ class CalendarView(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         # use today's date for the calendar
-        d = get_date(self.request.GET.get('day', None))
+        d = get_date(self.request.GET.get('month', None))
 
         # Instantiate our calendar class with today's year and date
         cal = Calendar(d.year, d.month)
@@ -29,7 +29,6 @@ class CalendarView(generic.ListView):
         # Call the formatmonth method, which returns our calendar as a table
         
         html_cal = cal.formatmonth(withyear=True)
-        d = get_date(self.request.GET.get('month', None))
         
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
