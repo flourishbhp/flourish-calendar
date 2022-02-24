@@ -1,4 +1,4 @@
-{% extends 'calendar_dashboard/base.html' %}
+{% extends 'flourish_calendar/base.html' %}
 
 {% block title %}
 Event
@@ -6,7 +6,7 @@ Event
 
 {% block main %}
 <div class="clearfix">
-  <a class="btn btn-info left" href="{'% url 'flourish_calendar:calendar' %}"> Calendar </a>
+  <a class="btn btn-info left" href="{% url 'flourish_calendar:calendar' %}"> Calendar </a>
 </div>
 
 <form method="post">
