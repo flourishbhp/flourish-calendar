@@ -1,25 +1,19 @@
 import calendar
-from django.shortcuts import get_object_or_404, redirect, render
 
 
 from datetime import datetime, date, timedelta
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.views import generic
 from django.utils.safestring import mark_safe
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
-
-from .forms import EventForm
-from .models import *
+from edc_appointment.models import Appointment
 from .utils import Calendar
-
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
     navbar_name = 'flourish_calendar'
     navbar_selected_item = 'calendar'
-    model = Event
+    model = Appointment
     template_name = 'flourish_calendar/calendar.html'
 
     def get_context_data(self, **kwargs):
@@ -32,9 +26,9 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         cal = Calendar(d.year, d.month)
 
         # Call the formatmonth method, which returns our calendar as a table
-        
+
         html_cal = cal.formatmonth(withyear=True)
-        
+
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
         context['calendar'] = mark_safe(html_cal)
@@ -61,17 +55,3 @@ def next_month(d):
     next_month = last + timedelta(days=1)
     month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
     return month
-
-
-def event(request, event_id=None):
-    instance = Event()
-    if event_id:
-        instance = get_object_or_404(Event, pk=event_id)
-    else:
-        instance = Event()
-
-    form = EventForm(request.POST or None, instance=instance)
-    if request.POST and form.is_valid():
-        form.save()
-        return redirect('flourish_calendar:calendar')
-    return render(request, 'flourish_calendar/event.html', {'form': form})
