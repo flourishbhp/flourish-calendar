@@ -1,123 +1,176 @@
-{% extends 'edc_base/base.html' %}
-{% load static %}
-<!doctype html>
+{% extends 'edc_base/base.html' %} {% load static %}
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+    />
+    {% comment %}
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{'% static 'calendar_dashboard/css/styles.css' %}"
+    />
+    {% endcomment %}
+    <title>Django Calendar App</title>
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css">
-  {% comment %} <link rel="stylesheet" type="text/css" href="{'% static 'calendar_dashboard/css/styles.css' %}"> {% endcomment %}
-  <title>Django Calendar App</title>
+    <style></style>
+  </head>
+  <body>
+    {% block extra-styles %}
 
-  <style>
-  </style>
-</head>
-<body>
+    <style>
+      .calendar {
+        width: 100%;
+        margin: auto;
+        font-size: 13px;
+      }
 
- {% block extra-styles %}
+      .calendar tr,
+      .calendar td {
+        border: 1px solid black;
+      }
 
- <style>
-    .calendar {
-    width: 98%;
-    margin: auto;
-    font-size: 13px;
-    }
+      .calendar th {
+        padding: 10px;
+        text-align: center;
+        font-size: 18px;
+      }
 
-    .calendar tr, .calendar td {
-    border: 1px solid black;
-    }
+      .calendar td {
+        width: 200px;
+        height: 150px;
+        padding: 20px 0px 0px 5px;
+      }
 
-    .calendar th {
-    padding: 10px;
-    text-align: center;
-    font-size: 18px;
-    }
+      .month {
+        font-size: 25px;
+      }
 
-    .calendar td {
-    width: 200px;
-    height: 150px;
-    padding: 20px 0px 0px 5px;
-    }
+      .date {
+        font-size: 13px;
+      }
 
-    .month {
-    font-size: 25px;
-    }
+      ul {
+        height: 100%;
+        padding: 0px 5px 0px 20px;
+      }
 
-    .date {
-    font-size: 16px;
-    }
+      a {
+        color: #17a2b8;
+      }
 
-    ul {
-    height: 100%;
-    padding: 0px 5px 0px 20px;
-    }
+      .left {
+        float: left;
+      }
 
-    a {
-    color: #17a2b8;
-    }
+      .right {
+        float: right;
+      }
 
-    .left {
-    float: left;
-    }
 
-    .right {
-    float: right;
-    }
+      .clearfix {
+        margin: 15px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
 
-    .btn {
-    outline: none;
-    color: black;
-    background-color: transparent;
-    box-shadow: 0 0 0 0;
-    }
+      .clearfix * {
+        margin-right: 5px;
+      }
 
-    .clearfix {
-    margin: 15px;
-    }
+      .clearfix form {
+        display: flex;
+      }
+
+      {% comment %} .clearfix .filter-form {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        border: 1px solid red;
+        padding: 5px;
+      }
+
+      .clearfix label {
+        margin: 2.5px
+      } {% endcomment %}
+
+      .form {
+        margin: auto;
+      }
+
+      .form input,
+      .form select,
+      .form textarea {
+        border-radius: 5px;
+        border: 1px solid #17a2b8;
+        padding: 5px;
+        width: 100%;
+      }
+
+
+      .date .date:hover {
+        transform: scale(1.1);
+      }
+      .blink {
+      animation: blinker 0.6s linear infinite;
+      font-family: sans-serif;
+      }
+      @keyframes blinker {  
+      50% { opacity: 0; }
+      }
+      .blink-one {
+      animation: blinker-one 1s linear infinite;
+      }
+      @keyframes blinker-one {  
+      0% { opacity: 0; }
+      }
+      .blink-two {
+      animation: blinker-two 1.4s linear infinite;
+      }
+      @keyframes blinker-two {  
+      100% { opacity: 0; }
+      }
+    </style>
+
+    {% endblock extra-styles %}
     
-    .form {
-    margin: auto;
-    }
+    {% block main %} 
+    {% block content %}
+    {% endblock content %} 
+    {% endblock main %}
 
-    .form input, .form select, .form textarea {
-      border-radius: 5px;
-      border: 1px solid #17a2b8;
-      outline: none;
-      background: none;
-      padding: 5px;
-      width: 100%;
-  }
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
 
-    .date { 
-    transition: all .2s ease-in-out; 
-    }
-
-    .date .date:hover { 
-    transform: scale(1.1); 
-    }
-
- </style>
- 
- {% endblock extra-styles %}
-
-{% block main %}
-  {% block content %}{% endblock content %}
-{% endblock main %}
-
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
-
-  {% block script %}
-  {% endblock %}
-</body>
+    {% block script %} {% endblock %}
+  </body>
 </html>
