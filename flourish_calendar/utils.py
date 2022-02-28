@@ -137,23 +137,23 @@ class AppointmentDisplayHelper:
         status = self._appointment.appt_status
         if status == NEW_APPT:
             return f'''\
-                <span style="color: orange;">{self.subject_identifier} </span>
+                <span style="color: orange;" title="New Appointment">{self.subject_identifier} </span>
                 '''
         elif status == IN_PROGRESS_APPT:
             return f'''\
-                <span style="color: blue;" class="blink-one">{self.subject_identifier}</span>
+                <span style="color: blue;" class="blink-one" title="Inprogress Appointment">{self.subject_identifier}</span>
                 '''
         elif status == COMPLETE_APPT:
             return f'''\
-                <span style="color: green;">{self.subject_identifier} ✅</span>
+                <span style="color: green;" title="Complete Appointment">{self.subject_identifier} ✅</span>
                 '''
         elif status == INCOMPLETE_APPT:
             return f'''\
                 <span style="color: green;" title="Incomplete Appointment">{self.subject_identifier} ⚠️</span>
                 '''
-        elif (status == CANCELLED_APPT) or (status == self.subject_identifier):
+        elif (status == CANCELLED_APPT):
             return f'''\
-                <span style="color: red;">{self.subject_identifier }</span>
+                <span style="color: red;" title="Cancelled Appointment">{self.subject_identifier }</span>
                 '''
     @property
     def status(self):
