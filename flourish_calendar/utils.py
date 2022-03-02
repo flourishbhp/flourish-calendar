@@ -2,7 +2,9 @@
 from calendar import HTMLCalendar
 from datetime import datetime
 import imp
+from select import select
 from sys import api_version
+from xml.etree.ElementPath import prepare_parent
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 from flourish_child.models import Appointment as ChildrenAppointments
@@ -31,34 +33,21 @@ class Calendar(HTMLCalendar):
 
         # events_per_day = events.filter(appt_datetime__day=day)
         d = ''
+        appointments = 0
 
         for event in events_per_day:
 
 
-            appointment_display_helper = AppointmentDisplayHelper(event)
-            # color = appointment_wrapper.status_color
-
-            if not appointment_display_helper.is_child:
-                d += f'''\
-                    <div>
-                        <li><a target="__blank" href="/subject/subject_dashboard/{appointment_display_helper.subject_identifier}/">{appointment_display_helper.html_wrapped_subject_identifier} </li>
-                    </div>
-				'''
-            else: 
-                d += f'''\
-                    <div>
-                        <li><a target="__blank" href="/subject/child_dashboard/{appointment_display_helper.subject_identifier}/">{appointment_display_helper.html_wrapped_subject_identifier}</li>
-                    </div>
-				'''
-
-	    # <a target="__blank" href="/subject/subject_dashboard/{appointment_wrapper.model_obj.subject_identifier}/">{appointment_wrapper.model_obj.subject_identifier} <span>{appointment_wrapper.status_color}</span></a>
+            d += AppointmentDisplayHelper(event).view_build()
+            appointments += 1
 
 
         if day != 0:
             return f'''\
                 <td>
                     <span class='date'>{day}</span>
-                    <ul> {d} </ul>
+                    <ul style="height: 200px; overflow: scroll;"> {d} </ul>
+                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >{appointments} Appointment(s)</p>
                 </td>
                 '''
         return '<td></td>'
@@ -114,7 +103,7 @@ class AppointmentDisplayHelper:
 
     child_appointment_model = 'flourish_child.appointment'
 
-    def __init__(self, appointment) -> None:
+    def __init__(self, appointment: Appointment) -> None:
         self._appointment = appointment
         self._subject_identifier = self._appointment.subject_identifier
 
@@ -126,7 +115,7 @@ class AppointmentDisplayHelper:
     def is_child(self):
         return isinstance(self._appointment, ChildrenAppointments)
     @property
-    def html_wrapped_subject_identifier(self):
+    def html_wrapped_status(self):
         """
         NEW_APPT,
         IN_PROGRESS_APPT,
@@ -137,23 +126,23 @@ class AppointmentDisplayHelper:
         status = self._appointment.appt_status
         if status == NEW_APPT:
             return f'''\
-                <span style="color: orange;" title="New Appointment">{self.subject_identifier} </span>
+                <span style="color: orange;" title="New Appointment">{self.status} </span>
                 '''
         elif status == IN_PROGRESS_APPT:
             return f'''\
-                <span style="color: blue;" class="blink-one" title="Inprogress Appointment">{self.subject_identifier}</span>
+                <span style="color: blue;" class="blink-one" title="Inprogress Appointment">{self.status}</span>
                 '''
         elif status == COMPLETE_APPT:
             return f'''\
-                <span style="color: green;" title="Complete Appointment">{self.subject_identifier} ✅</span>
+                <span style="color: green;" title="Complete Appointment">{self.status} ✅</span>
                 '''
         elif status == INCOMPLETE_APPT:
             return f'''\
-                <span style="color: green;" title="Incomplete Appointment">{self.subject_identifier} ⚠️</span>
+                <span style="color: green;" title="Incomplete Appointment">{self.status} ⚠️</span>
                 '''
         elif (status == CANCELLED_APPT):
             return f'''\
-                <span style="color: red;" title="Cancelled Appointment">{self.subject_identifier }</span>
+                <span style="color: red;" title="Cancelled Appointment">{self.status }</span>
                 '''
     @property
     def status(self):
@@ -162,3 +151,69 @@ class AppointmentDisplayHelper:
     @property
     def subject_identifier(self):
         return self._subject_identifier
+    
+    @property
+    def visit_code(self):
+        return self._appointment.visit_code
+
+    @property
+    def previous_appointments(self):
+        return self._appointment.history.all()
+
+    @property
+    def resceduled_appointments_count(self):
+
+        prev_appt = self.previous_appointments.values_list('appt_datetime__date', flat=True)
+        prev_appt_set = set(prev_appt)
+        return len(prev_appt_set) - 1
+
+    @property
+    def last_appointment(self):
+
+        appt = self.previous_appointments.exclude(appt_datetime__date=self._appointment.appt_datetime.date())
+
+        if appt:
+            return appt.last().appt_datetime.date()
+        else:
+            return None
+
+    def _html(self, dashboard_type):
+        view = "<div class='item'><li>"
+
+        view += f"""\
+            <a target="__blank" href="/subject/{dashboard_type}/{self.subject_identifier}/">
+                <b>{self.subject_identifier}</b>
+            </a>
+                <br/>
+                Visit Code : {self.visit_code}
+                <br/>
+                Status : {self.html_wrapped_status}
+            """
+
+        if self.resceduled_appointments_count:
+            view += f"""\
+                <br>
+                Reschedules: {self.resceduled_appointments_count}
+                """
+        if self.last_appointment:
+            view += f"""\
+                <br>
+                Prev. Appt Date: {self.last_appointment}
+                """
+
+        view += "</li></div>"
+
+        return view
+
+
+    def view_build(self):
+
+
+        if self.is_child:
+            return self._html('child_dashboard')
+        else:
+            return self._html('subject_dashboard')
+
+
+        
+
