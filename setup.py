@@ -18,11 +18,11 @@ setup(
     author_email='se-dmc@bhp.org.bw',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/flourishbhp/flourish-calendar',
+    url='https://github.com/geek911/flourish-calendar',
     license='GPL license, see LICENSE',
     description='flourish calendar.',
     long_description=README,
-    zip_safe=False,
+    zip_safe=True,
     keywords='django flourish calendar',
     classifiers=[
         'Environment :: Web Environment',
