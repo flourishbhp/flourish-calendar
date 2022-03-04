@@ -15,7 +15,7 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
     navbar_name = 'flourish_calendar'
     navbar_selected_item = 'calendar'
     model = Appointment
-    template_name = 'flourish_calendar/calendar.html'
+    template_name = 'flourish_calendar/templates/flourish_calendar/calendar.html'
 
 
     def get_context_data(self, **kwargs):
