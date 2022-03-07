@@ -67,25 +67,25 @@ class Calendar(HTMLCalendar):
         
         if self.filter == 'caregiver':
             caregiver_appointments = Appointment.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                timepoint_datetime__year=self.year, timepoint_datetime__month=self.month)
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = ChildrenAppointments.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                timepoint_datetime__year=self.year, timepoint_datetime__month=self.month)
             events = list(child_appointments)
 
         else:
             caregiver_appointments = Appointment.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                timepoint_datetime__year=self.year, timepoint_datetime__month=self.month)
 
             child_appointments = ChildrenAppointments.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                timepoint_datetime__year=self.year, timepoint_datetime__month=self.month)
 
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
             # children_appointments = ChildrenAppointments.objects.filter(
-            #     appt_datetime__year=self.year, appt_datetime__month=self.month)
+            #     timepoint_datetime__year=self.year, timepoint_datetime__month=self.month)
 
             # events = cargiver_appointments | children_appointments
 
@@ -163,14 +163,16 @@ class AppointmentDisplayHelper:
     @property
     def resceduled_appointments_count(self):
 
-        prev_appt = self.previous_appointments.values_list('appt_datetime__date', flat=True)
+        prev_appt = self.previous_appointments.values_list(
+            'timepoint_datetime__date', flat=True)
         prev_appt_set = set(prev_appt)
         return len(prev_appt_set) - 1
 
     @property
     def last_appointment(self):
 
-        appt = self.previous_appointments.exclude(appt_datetime__date=self._appointment.appt_datetime.date())
+        appt = self.previous_appointments.exclude(
+            timepoint_datetime__date=self._appointment.appt_datetime.date())
 
         if appt:
             return appt.last().appt_datetime.date()
