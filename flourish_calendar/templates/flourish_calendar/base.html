@@ -1,0 +1,193 @@
+{% extends 'edc_base/base.html' %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"
+    />
+    {% comment %}
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{'% static 'calendar_dashboard/css/styles.css' %}"
+    />
+    {% endcomment %}
+    <title>Django Calendar App</title>
+
+    <style></style>
+  </head>
+  <body>
+    {% block extra-styles %}
+
+    <style>
+      .calendar {
+        width: 100%;
+        margin: auto;
+        font-size: 13px;
+      }
+
+      .calendar tr,
+      .calendar td {
+        border: 1px solid black;
+      }
+
+      .calendar th {
+        padding: 10px;
+        text-align: center;
+        font-size: 18px;
+      }
+
+      .calendar td {
+        width: 200px;
+        height: 150px;
+        padding: 20px 0px 0px 5px;
+      }
+
+      .month {
+        font-size: 25px;
+      }
+
+      .date {
+        font-size: 13px;
+      }
+
+      ul {
+        height: 100%;
+        padding: 0px 5px 0px 20px;
+      }
+
+      a {
+        color: #17a2b8;
+      }
+
+      .left {
+        float: left;
+      }
+
+      .right {
+        float: right;
+      }
+
+
+      .clearfix {
+        margin: 15px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .clearfix * {
+        margin-right: 5px;
+      }
+
+      .clearfix form {
+        display: flex;
+      }
+
+      {% comment %} .clearfix .filter-form {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        border: 1px solid red;
+        padding: 5px;
+      }
+
+      .clearfix label {
+        margin: 2.5px
+      } {% endcomment %}
+
+      .form {
+        margin: auto;
+      }
+
+      .form input,
+      .form select,
+      .form textarea {
+        border-radius: 5px;
+        border: 1px solid #17a2b8;
+        padding: 5px;
+        width: 100%;
+      }
+
+
+      .date .date:hover {
+        transform: scale(1.1);
+      }
+      .blink {
+      animation: blinker 0.6s linear infinite;
+      font-family: sans-serif;
+      }
+      @keyframes blinker {  
+      50% { opacity: 0; }
+      }
+      .blink-one {
+      animation: blinker-one 1s linear infinite;
+      }
+      @keyframes blinker-one {  
+      0% { opacity: 0; }
+      }
+      .blink-two {
+      animation: blinker-two 1.4s linear infinite;
+      }
+      @keyframes blinker-two {  
+      100% { opacity: 0; }
+      }
+
+      td .item {
+        border: 1px solid #17a2b8;
+        padding-left: 2px;
+        font-size: 10px;
+        margin-bottom: 5px;
+        border-radius: 4px
+      }
+
+      .item:hover{
+        background-color: #f7fff3;
+      }
+
+      td ul {
+        list-style: none;
+      }
+
+    </style>
+
+    {% endblock extra-styles %}
+    
+    {% block main %} 
+    {% block content %}
+    {% endblock content %} 
+    {% endblock main %}
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    {% block script %} {% endblock %}
+  </body>
+</html>
