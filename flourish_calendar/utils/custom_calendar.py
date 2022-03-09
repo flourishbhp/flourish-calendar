@@ -1,7 +1,8 @@
+from datetime import datetime
 from django.apps import apps as django_apps
 from calendar import HTMLCalendar
 from edc_appointment.models import Appointment
-# from flourish_child.models import Appointment as ChildrenAppointments
+from ..models import Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
 
 class CustomCalendar(HTMLCalendar):
@@ -21,24 +22,32 @@ class CustomCalendar(HTMLCalendar):
 
         events_per_day = []
         for event in events:
-            if event.appt_datetime.day == day:
+            if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
+                if event.appt_datetime.day == day:
+                    events_per_day.append(event)
+            elif isinstance(event, Reminder):
                 events_per_day.append(event)
+        
+        import pdb; pdb.set_trace()
 
         # events_per_day = events.filter(appt_datetime__day=day)
         d = ''
-        appointments = 0
+        counter = 0
 
         for event in events_per_day:
-
-            d += AppointmentHtmlBuilder(event).view_build()
-            appointments += 1
+            if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
+                d += AppointmentHtmlBuilder(event).view_build()
+                counter += 1
+            elif isinstance(event, Reminder):
+                d = ''
+                counter += 1
 
         if day != 0:
             return f'''\
                 <td>
                     <span class='date'>{day}</span>
                     <ul style="height: 200px; overflow: scroll;"> {d} </ul>
-                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >{appointments} Appointment(s)</p>
+                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >{counter} Appointment(s)</p>
                 </td>
                 '''
         return '<td></td>'
@@ -65,6 +74,14 @@ class CustomCalendar(HTMLCalendar):
             child_appointments = self.children_appointment_cls.objects.filter(
                 appt_datetime__year=self.year, appt_datetime__month=self.month)
             events = list(child_appointments)
+            
+
+        elif self.filter == 'reminder':
+            reminders = Reminder.objects.filter(
+                datetime__year = self.year, datetime__month=self.month
+            )
+
+            events = list(reminders)
 
         else:
             caregiver_appointments = Appointment.objects.filter(
