@@ -1,56 +1,116 @@
 .calendar {
-  width: 98%;
-  margin: auto;
-  font-size: 13px;
-}
+        width: 100%;
+        margin: auto;
+        font-size: 13px;
+      }
 
-.calendar tr, .calendar td {
-  border: 1px solid black;
-}
+      .calendar tr,
+      .calendar td {
+        border: 1px solid black;
+      }
 
-.calendar th {
-  padding: 10px;
-  text-align: center;
-  font-size: 18px;
-}
+      .calendar th {
+        padding: 10px;
+        text-align: center;
+        font-size: 18px;
+      }
 
-.calendar td {
-  width: 200px;
-  height: 150px;
-  padding: 20px 0px 0px 5px;
-}
+      .calendar td {
+        width: 200px;
+        height: 150px;
+        padding: 20px 0px 0px 5px;
+      }
 
-.month {
-  font-size: 25px;
-}
+      .month {
+        font-size: 25px;
+      }
 
-.date {
-  font-size: 16px;
-}
+      .date {
+        font-size: 13px;
+      }
 
-ul {
-  height: 100%;
-  padding: 0px 5px 0px 20px;
-}
+      ul {
+        height: 100%;
+        padding: 0px 5px 0px 20px;
+      }
 
-a {
-  color: #17a2b8;
-}
-.left {
-  float: left;
-}
+      a {
+        color: #17a2b8;
+      }
 
-.right {
-  float: right;
-}
+      .left {
+        float: left;
+      }
 
-/* .btn {
-  outline: none;
-  color: black;
-  background-color: transparent;
-  box-shadow: 0 0 0 0;
-} */
+      .right {
+        float: right;
+      }
 
-.clearfix {
-  margin: 15px;
-}
+
+      .clearfix {
+        margin: 15px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .clearfix * {
+        margin-right: 5px;
+      }
+
+      .clearfix form {
+        display: flex;
+      }
+
+      .form {
+        margin: auto;
+      }
+
+      .form input,
+      .form select,
+      .form textarea {
+        border-radius: 5px;
+        border: 1px solid #17a2b8;
+        padding: 5px;
+        width: 100%;
+      }
+
+
+      .date .date:hover {
+        transform: scale(1.1);
+      }
+      .blink {
+      animation: blinker 0.6s linear infinite;
+      font-family: sans-serif;
+      }
+      @keyframes blinker {  
+      50% { opacity: 0; }
+      }
+      .blink-one {
+      animation: blinker-one 1s linear infinite;
+      }
+      @keyframes blinker-one {  
+      0% { opacity: 0; }
+      }
+      .blink-two {
+      animation: blinker-two 1.4s linear infinite;
+      }
+      @keyframes blinker-two {  
+      100% { opacity: 0; }
+      }
+
+      td .item {
+        border: 1px solid #17a2b8;
+        padding-left: 2px;
+        font-size: 10px;
+        margin-bottom: 5px;
+        border-radius: 4px
+      }
+
+      .item:hover{
+        background-color: #f7fff3;
+      }
+
+      td ul {
+        list-style: none;
+      }

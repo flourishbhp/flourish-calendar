@@ -92,10 +92,10 @@ class AppointmentHtmlBuilder:
         if appt:
             return appt.last().appt_datetime.date()
         else:
-            return None
+            return None  
 
     def _html(self, dashboard_type):
-        view = "<div class='item'><li>"
+        view = f"<div class='item {self._appointment.appt_status}'><li>"
 
         view += f"""\
             <a target="__blank" href="/subject/{dashboard_type}/{self.subject_identifier}/">
