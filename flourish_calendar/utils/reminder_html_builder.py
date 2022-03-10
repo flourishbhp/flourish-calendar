@@ -15,7 +15,7 @@ class ReminderHtmlBuilder:
                 <b>{self._reminder.title}</b>
             </a>
                 <br/>
-                Completed : {self._reminder.status}
+                Completed : {self._reminder.status.replace('-', ' ').title()}
                 <br/>
             """
 
