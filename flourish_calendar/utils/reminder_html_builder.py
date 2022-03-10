@@ -14,10 +14,21 @@ class ReminderHtmlBuilder:
             <a target="__blank" href="{reminder_wrapper.href}">
                 <b>{self._reminder.title}</b>
             </a>
-                <br/>
-                Completed : {self._reminder.status.replace('-', ' ').title()}
-                <br/>
             """
+
+        if self._reminder.status:
+            view += f"""\
+                <br/>
+                Status : {self._reminder.status.replace('-', ' ').title()}
+                <br/>
+                """
+        else:
+            view += f"""\
+                <br/>
+                Status : Not Set
+                <br/>
+                """
+
 
         view += "</li></div>"
 
