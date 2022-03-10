@@ -19,7 +19,7 @@ class ReminderHtmlBuilder:
         if self._reminder.status:
             view += f"""\
                 <br/>
-                Status : {self._reminder.status.replace('-', ' ').title()}
+                Status : {' '.join(self._reminder.status.split('-').title())}
                 <br/>
                 """
         else:
