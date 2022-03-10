@@ -7,10 +7,9 @@ from django.db import models
 from edc_appointment.choices import APPT_STATUS
 
 class Reminder(BaseUuidModel):
-    title = models.CharField(max_length=50)
-    subject_identifier = models.CharField(max_length=20)
+    title = models.CharField(max_length=20)
     datetime = models.DateTimeField()
-    description = models.TextField(blank=True, null=True)
+    note = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=29, choices=APPT_STATUS, blank=True, null=True)
 
     class Meta(BaseUuidModel.Meta):

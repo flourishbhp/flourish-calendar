@@ -13,9 +13,8 @@ class ReminderAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'title',
                 'datetime',
-                'subject_identifier',
+                'title',
                 'description',
                 'status',)}
          ), audit_fieldset_tuple)
