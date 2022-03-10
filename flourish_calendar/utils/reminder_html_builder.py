@@ -4,6 +4,10 @@ from ..model_wrappers import ReminderModelWrapper
 class ReminderHtmlBuilder:
     def __init__(self, reminder: Reminder) -> None:
         self._reminder = reminder 
+
+    @property
+    def status(self):
+        return self._reminder.status.replace("_", " ").title()
     
     def _html(self):
         view = "<div class='item'><li>"
@@ -19,7 +23,7 @@ class ReminderHtmlBuilder:
         if self._reminder.status:
             view += f"""\
                 <br/>
-                Status : {' '.join(self._reminder.status.split('-').title())}
+                Status : {self.status}
                 <br/>
                 """
         else:
