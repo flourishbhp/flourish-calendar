@@ -4,6 +4,10 @@ from ..model_wrappers import ReminderModelWrapper
 class ReminderHtmlBuilder:
     def __init__(self, reminder: Reminder) -> None:
         self._reminder = reminder 
+
+    @property
+    def status(self):
+        return self._reminder.status.replace("_", " ").title()
     
     def _html(self):
         view = "<div class='item'><li>"
@@ -14,10 +18,21 @@ class ReminderHtmlBuilder:
             <a target="__blank" href="{reminder_wrapper.href}">
                 <b>{self._reminder.title}</b>
             </a>
-                <br/>
-                Completed : {self._reminder.status}
-                <br/>
             """
+
+        if self._reminder.status:
+            view += f"""\
+                <br/>
+                Status : {self.status}
+                <br/>
+                """
+        else:
+            view += f"""\
+                <br/>
+                Status : Not Set
+                <br/>
+                """
+
 
         view += "</li></div>"
 
