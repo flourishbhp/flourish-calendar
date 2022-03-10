@@ -17,10 +17,10 @@ class ReminderAdmin(admin.ModelAdmin):
                 'datetime',
                 'subject_identifier',
                 'description',
-                'completed',)}
+                'status',)}
          ), audit_fieldset_tuple)
 
     radio_fields = {
-        'completed': admin.VERTICAL
+        'status': admin.VERTICAL
     }
 
