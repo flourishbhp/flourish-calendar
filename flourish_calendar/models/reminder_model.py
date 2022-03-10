@@ -14,4 +14,4 @@ class Reminder(BaseUuidModel):
 
     class Meta(BaseUuidModel.Meta):
         app_label = 'flourish_calendar'
-        verbose_name = 'Reminder'
+        verbose_name = 'Note'
