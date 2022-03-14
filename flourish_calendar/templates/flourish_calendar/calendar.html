@@ -1,0 +1,21 @@
+{% extends 'flourish_calendar/base.html' %}
+
+{% block content %}
+    <div class="clearfix">
+        <a class="btn btn-info left" href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-info right" href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}"> Next Month </a>
+        <form class="filter-form" method="get" action="">
+            <select name="filter" value={{ filter }} class="form-control">
+                <option value="all"> All </option>
+                <option value="caregiver"> Caregiver </option>
+                <option value="children"> Children </option>
+                <option value="reminder">Notes</option>
+            </select>
+            <button class="btn">Filter</button>
+        </form>
+    <a href="{{new_reminder_url}}" class="btn btn-info">New Note</a>
+
+
+    </div>
+    {{ calendar }}
+{% endblock %}
