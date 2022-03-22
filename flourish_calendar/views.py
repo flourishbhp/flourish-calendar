@@ -24,17 +24,19 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        month = self.request.GET.get('month', None)
+
         # use today's date for the calendar
-        d = DateHelper.get_date(self.request.GET.get('month', None))
+        d = DateHelper.get_date(month)
 
         search_filter = self.request.GET.get('filter', None)
         search_term = self.request.GET.get('search_term', None)
 
-        if search_term and search_term != self.request.session.get('filter', None):
-            self.request.session['filter'] = self.request.GET.get('filter', None)
+        if search_filter != self.request.session.get('filter', 'not-the-same-placeholder'):
+            self.request.session['filter'] = search_filter
 
-        if search_filter and search_filter != self.request.session.get('search_term', None):
-            self.request.session['search_term'] = self.request.GET.get('search_term', None)
+        if search_term != self.request.session.get('search_term', 'not-the-same-placeholder'):
+            self.request.session['search_term'] = search_term
 
         # Instantiate our calendar class with today's year and date
         cal = CustomCalendar(d.year, d.month, self.request)
