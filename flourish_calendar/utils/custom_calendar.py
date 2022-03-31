@@ -1,17 +1,23 @@
+import select
 from datetime import datetime
 from multiprocessing import Event
 from django.apps import apps as django_apps
 from calendar import HTMLCalendar
+
+from django.db.models import Q
 from edc_appointment.models import Appointment
 from ..models import Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
+from django.http import HttpRequest
+
 
 class CustomCalendar(HTMLCalendar):
-    def __init__(self, year=None, month=None, session=None):
+    def __init__(self, year=None, month=None, request=None):
         self.year = year
         self.month = month
-        self.filter = session
+        self.filter = request.session.get('filter', None)
+        self.search_term = request.session.get('search_term', '')
         super(CustomCalendar, self).__init__()
 
     @property
@@ -44,9 +50,10 @@ class CustomCalendar(HTMLCalendar):
                 reminder_counter += 1
 
         if day != 0:
+            today_day = datetime.today().day
             return f'''\
                 <td>
-                    <span class='date'>{day}</span>
+                    <span class='date {"today" if day == today_day else ""}'>{day}</span>
                     <ul style="height: 200px; overflow: scroll;"> {d} </ul>
                     <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) N ({reminder_counter}) </p>
                 </td>
@@ -66,35 +73,45 @@ class CustomCalendar(HTMLCalendar):
 
         events = list()
 
+        q_objects = Q()
+
+        if self.search_term:
+            q_objects = Q(subject_identifier__icontains=self.search_term) | \
+                        Q(visit_code__icontains=self.search_term) | \
+                        Q(appt_status__icontains=self.search_term) | \
+                        Q(timepoint_status__icontains=self.search_term) | \
+                        Q(appt_reason__icontains=self.search_term)
+
         if self.filter == 'reminder':
             reminders = Reminder.objects.filter(
-                datetime__year=self.year, datetime__month=self.month
+                Q(datetime__year=self.year) &
+                Q(datetime__month=self.month)
             )
             events = list(reminders)
 
         elif self.filter == 'caregiver':
             caregiver_appointments = Appointment.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = self.children_appointment_cls.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
             events = list(child_appointments)
-            
+
 
         elif self.filter == 'reminder':
             reminders = Reminder.objects.filter(
-                datetime__year = self.year, datetime__month=self.month
+                datetime__year=self.year, datetime__month=self.month
             )
             events = list(reminders)
 
         else:
             caregiver_appointments = Appointment.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
 
             child_appointments = self.children_appointment_cls.objects.filter(
-                appt_datetime__year=self.year, appt_datetime__month=self.month)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
@@ -103,7 +120,6 @@ class CustomCalendar(HTMLCalendar):
             events.extend(list(reminders))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
-            
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'

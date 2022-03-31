@@ -8,8 +8,8 @@ from edc_appointment.choices import (
     CANCELLED_APPT
 )
 
-class AppointmentHtmlBuilder:
 
+class AppointmentHtmlBuilder:
     child_appointment_model = 'flourish_child.appointment'
 
     def __init__(self, appointment: Appointment) -> None:
@@ -56,12 +56,27 @@ class AppointmentHtmlBuilder:
                 '''
         elif (status == CANCELLED_APPT):
             return f'''\
-                <span style="color: red;" title="Cancelled Appointment">{self.status }</span>
+                <span style="color: red;" title="Cancelled Appointment">{self.status}</span>
                 '''
 
     @property
     def status(self):
         return self._appointment.appt_status.replace("_", " ").title()
+
+    @property
+    def status_color(self):
+        status = self._appointment.appt_status
+
+        if status == NEW_APPT:
+            return 'label-warning'
+        elif status == COMPLETE_APPT:
+            return 'label-success'
+        elif status == INCOMPLETE_APPT:
+            return 'label-info'
+        elif status == CANCELLED_APPT:
+            return 'label-warning'
+        elif status == IN_PROGRESS_APPT:
+            return 'label-default'
 
     @property
     def subject_identifier(self):
@@ -92,33 +107,21 @@ class AppointmentHtmlBuilder:
         if appt:
             return appt.last().appt_datetime.date()
         else:
-            return None  
+            return None
 
     def _html(self, dashboard_type):
-        view = f"<div class='item {self._appointment.appt_status}'><li>"
-
-        view += f"""\
-            <a target="__blank" href="/subject/{dashboard_type}/{self.subject_identifier}/">
-                <b>{self.subject_identifier}</b>
-            </a>
-                <br/>
-                Visit Code : {self.visit_code}
-                <br/>
-                Status : {self.html_wrapped_status}
-            """
-
-        if self.resceduled_appointments_count:
-            view += f"""\
-                <br>
-                Reschedules: {self.resceduled_appointments_count}
-                """
-        if self.last_appointment:
-            view += f"""\
-                <br>
-                Prev. Appt Date: {self.last_appointment}
-                """
-
-        view += "</li></div>"
+        view = f'''\
+        <div class="appointment-container" style="border:none">
+            <button 
+            class="label {self.status_color} appointment" 
+            id="appointment"
+            data-toggle="popover" 
+            title="<a target='__blank' href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
+            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} <br> Reschedules: {self.resceduled_appointments_count}">
+                {self.subject_identifier}
+            </button>
+        </div>
+        '''
 
         return view
 
