@@ -111,53 +111,19 @@ class AppointmentHtmlBuilder:
 
     def _html(self, dashboard_type):
         view = f'''\
-        <div class="appointment-container" style="">
-            <a 
-            href="/subject/{dashboard_type}/{self.subject_identifier}/" 
-            class="label {self.status_color} appointment">
+        <div class="appointment-container" style="border:none">
+            <button 
+            class="label {self.status_color} appointment" 
+            id="appointment"
+            data-toggle="popover" 
+            title="<a target='__blank' href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
+            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} <br> Reschedules: {self.resceduled_appointments_count}">
                 {self.subject_identifier}
-            </a>
+            </button>
         </div>
         '''
-        return view
 
-    # def _html(self, dashboard_type):
-    #     view = f"<div class='item {self._appointment.appt_status}'><li>"
-    #
-    #     view += f"""\
-    #         <a target="__blank" href="/subject/{dashboard_type}/{self.subject_identifier}/">
-    #             <b>{self.subject_identifier}</b>
-    #         </a>
-    #             <br/>
-    #             Visit Code : {self.visit_code}
-    #             <br/>
-    #             Status : {self.html_wrapped_status}
-    #         """
-    #
-    #     view += f"""\
-    #                 <a target="__blank" href="/subject/{dashboard_type}/{self.subject_identifier}/">
-    #                     <b>{self.subject_identifier}</b>
-    #                 </a>
-    #                     <br/>
-    #                     Visit Code : {self.visit_code}
-    #                     <br/>
-    #                     Status : {self.html_wrapped_status}
-    #                 """
-    #
-    #     if self.resceduled_appointments_count:
-    #         view += f"""\
-    #             <br>
-    #             Reschedules: {self.resceduled_appointments_count}
-    #             """
-    #     if self.last_appointment:
-    #         view += f"""\
-    #             <br>
-    #             Prev. Appt Date: {self.last_appointment}
-    #             """
-    #
-    #     view += "</li></div>"
-    #
-    #     return view
+        return view
 
     def view_build(self):
 
