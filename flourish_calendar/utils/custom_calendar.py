@@ -17,7 +17,7 @@ class CustomCalendar(HTMLCalendar):
         self.year = year
         self.month = month
         self.filter = request.session.get('filter', None)
-        self.search_term = request.session.get('search_term', None)
+        self.search_term = request.session.get('search_term', '')
         super(CustomCalendar, self).__init__()
 
     @property
@@ -50,9 +50,10 @@ class CustomCalendar(HTMLCalendar):
                 reminder_counter += 1
 
         if day != 0:
+            today_day = datetime.today().day
             return f'''\
                 <td>
-                    <span class='date'>{day}</span>
+                    <span class='date {"today" if day == today_day else ""}'>{day}</span>
                     <ul style="height: 200px; overflow: scroll;"> {d} </ul>
                     <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) N ({reminder_counter}) </p>
                 </td>
