@@ -1,5 +1,8 @@
+import imp
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
+from ..model_wrappers import ReminderModelWrapper
+from ..models import Reminder
 from edc_appointment.choices import (
     NEW_APPT,
     IN_PROGRESS_APPT,
@@ -109,6 +112,11 @@ class AppointmentHtmlBuilder:
         else:
             return None
 
+    @property
+    def reminder(self):
+        reminder = Reminder()
+        return ReminderModelWrapper(model_obj=reminder)
+
     def _html(self, dashboard_type):
         view = f'''\
         <div class="appointment-container" style="border:none">
@@ -117,7 +125,7 @@ class AppointmentHtmlBuilder:
             id="appointment"
             data-toggle="popover" 
             title="<a target='__blank' href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
-            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} <br> Reschedules: {self.resceduled_appointments_count}">
+            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} <br> Reschedules: {self.resceduled_appointments_count} <br> <a href='{self.reminder.href}title={self.subject_identifier}'>Add reminder</a> ">
                 {self.subject_identifier}
             </button>
         </div>
