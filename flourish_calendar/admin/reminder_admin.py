@@ -9,9 +9,9 @@ from edc_model_admin.model_admin_next_url_redirect_mixin import ModelAdminNextUr
 
 @admin.register(Reminder, site=flourish_calendar_admin)
 class ReminderAdmin(
-    ModelAdminBasicMixin, 
-    ModelAdminNextUrlRedirectMixin, 
-    admin.ModelAdmin):
+        ModelAdminBasicMixin,
+        ModelAdminNextUrlRedirectMixin,
+        admin.ModelAdmin):
 
     form = ReminderForm
 
@@ -20,11 +20,11 @@ class ReminderAdmin(
             'fields': (
                 'datetime',
                 'title',
+                'type',
                 'note',
-                'status',)}
+            )}
          ), audit_fieldset_tuple)
 
     radio_fields = {
-        'status': admin.VERTICAL
+        'type': admin.VERTICAL
     }
-

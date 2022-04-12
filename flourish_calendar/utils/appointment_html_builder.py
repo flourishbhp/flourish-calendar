@@ -117,6 +117,11 @@ class AppointmentHtmlBuilder:
         reminder = Reminder()
         return ReminderModelWrapper(model_obj=reminder)
 
+    @property
+    def add_reschedule_reason(self):
+        # if self.resceduled_appointments_count:
+        return f'''<br> <a href='{self.reminder.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
+
     def _html(self, dashboard_type):
         view = f'''\
         <div class="appointment-container" style="border:none">
@@ -124,8 +129,11 @@ class AppointmentHtmlBuilder:
             class="label {self.status_color} appointment" 
             id="appointment"
             data-toggle="popover" 
-            title="<a target='__blank' href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
-            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} <br> Reschedules: {self.resceduled_appointments_count} <br> <a href='{self.reminder.href}title={self.subject_identifier}'>Add reminder</a> ">
+            title="<a target='__blank' \
+                href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
+            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} \
+            <br> Reschedules: {self.resceduled_appointments_count}\
+             <br> <a href='{self.reminder.href}title={self.subject_identifier} Note'>Add Note</a> ">
                 {self.subject_identifier}
             </button>
         </div>
