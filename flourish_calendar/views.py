@@ -29,7 +29,7 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         # use today's date for the calendar
         d = DateHelper.get_date(month)
 
-        search_filter = self.request.GET.get('filter', None)
+        search_filter = self.request.GET.get('filter', "")
         search_term = self.request.GET.get('search_term', None)
 
         if search_filter != self.request.session.get('filter', 'not-the-same-placeholder'):
