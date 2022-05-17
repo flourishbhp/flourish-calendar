@@ -123,6 +123,11 @@ class AppointmentHtmlBuilder:
         return f'''<br> <a href='{self.reminder.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
 
     def _html(self, dashboard_type):
+        icon = None
+        if 'quart' in self._appointment.schedule_name:
+            icon = '📞'
+        else:
+            icon = '👩'
         view = f'''\
         <div class="appointment-container" style="border:none">
             <button 
@@ -135,7 +140,9 @@ class AppointmentHtmlBuilder:
             <br> Reschedules: {self.resceduled_appointments_count}\
              <br> <a href='{self.reminder.href}title={self.subject_identifier} Note'>Add Note</a> ">
                 {self.subject_identifier}
+                {icon}
             </button>
+     
         </div>
         '''
 
