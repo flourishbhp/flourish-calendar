@@ -68,8 +68,6 @@ class CustomCalendar(HTMLCalendar):
     # formats a month as a table
     # filter events by year and month
     def formatmonth(self, withyear=True):
-        
-        breakpoint()
 
         events = list()
 
