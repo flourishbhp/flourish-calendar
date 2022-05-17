@@ -1,4 +1,3 @@
-from math import remainder
 from django.views import generic
 from django.utils.safestring import mark_safe
 from edc_base.view_mixins import EdcBaseViewMixin

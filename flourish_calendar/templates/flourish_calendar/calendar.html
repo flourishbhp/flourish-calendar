@@ -5,7 +5,11 @@
         <a class="btn btn-info left" href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}"> Previous Month </a>
         <a class="btn btn-info right" href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}"> Next Month </a>
         <form class="filter-form" method="get" action="">
-            <input name="search_term" value="{{ search_term }}" type="text" class="form-control" placeholder="Search for...">
+            {% if search_term %}
+                <input name="search_term" value="{{ search_term }}" type="text" class="form-control" placeholder="Search for...">
+            {% else %}
+                <input name="search_term" value="" type="text" class="form-control" placeholder="Search for...">
+            {% endif %}
 
             <select name="filter" value={{ filter }} class="form-control">
                 <option value="all"> All </option>
