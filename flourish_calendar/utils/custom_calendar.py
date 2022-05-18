@@ -1,15 +1,13 @@
-import select
-from datetime import datetime
-from multiprocessing import Event
-from django.apps import apps as django_apps
 from calendar import HTMLCalendar
+from datetime import datetime
 
+from django.apps import apps as django_apps
 from django.db.models import Q
 from edc_appointment.models import Appointment
-from ..models import Reminder
+
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
-from django.http import HttpRequest
+from ..models import Reminder
 
 
 class CustomCalendar(HTMLCalendar):
@@ -127,3 +125,4 @@ class CustomCalendar(HTMLCalendar):
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f'{self.formatweek(week, events)}\n'
         return cal
+    
