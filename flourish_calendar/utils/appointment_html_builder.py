@@ -3,6 +3,8 @@ from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 from ..model_wrappers import ReminderModelWrapper
 from ..models import Reminder
+from django.template.loader import render_to_string
+
 from edc_appointment.choices import (
     NEW_APPT,
     IN_PROGRESS_APPT,
@@ -128,23 +130,17 @@ class AppointmentHtmlBuilder:
             icon = '📞'
         else:
             icon = '👩'
-        view = f'''\
-        <div class="appointment-container" style="border:none">
-            <button 
-            class="label {self.status_color} appointment" 
-            id="appointment"
-            data-toggle="popover" 
-            title="<a target='__blank' \
-                href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
-            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} \
-            <br> Reschedules: {self.resceduled_appointments_count}\
-             <br> <a href='{self.reminder.href}title={self.subject_identifier} Note'>Add Note</a> ">
-                {self.subject_identifier}
-                {icon}
-            </button>
-     
-        </div>
-        '''
+        view = render_to_string('flourish_calendar/appointment_template.html', {
+            'status_color': self.status_color,
+            'dashboard_type': dashboard_type,
+            'subject_identifier': self.subject_identifier,
+            'visit_code': self.visit_code,
+            'status': self.status,
+            'resceduled_appointments_count': self.resceduled_appointments_count,
+            'reminder': self.reminder,
+            'icon': icon,
+        })
+        
 
         return view
 
