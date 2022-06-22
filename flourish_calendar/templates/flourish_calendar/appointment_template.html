@@ -10,7 +10,15 @@
     <br/> 
     
     Reschedules: {{resceduled_appointments_count}}
-        <br> <a href='{{reminder.href}}title={{subject_identifier}}Note'>Add Note</a>">
+        <br> <a href='{{reminder.href}}title={{subject_identifier}}Note'>Add Note</a>
+        <br/>
+
+        <hr>
+
+        {% for choice in appointment_choices %}
+            <a href='#'>{{choice}}</a>
+        {% endfor %}">
+        
         {{subject_identifier}}
         {{icon}}
     </button>

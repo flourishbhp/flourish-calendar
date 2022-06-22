@@ -3,6 +3,7 @@ from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 from ..model_wrappers import ReminderModelWrapper
 from ..models import Reminder
+from ..choices import APPT_COLOR
 from django.template.loader import render_to_string
 
 from edc_appointment.choices import (
@@ -118,6 +119,10 @@ class AppointmentHtmlBuilder:
     def reminder(self):
         reminder = Reminder()
         return ReminderModelWrapper(model_obj=reminder)
+    
+    @property
+    def appointment_choices(self):
+        return dict(APPT_COLOR).values()
 
     @property
     def add_reschedule_reason(self):
@@ -139,6 +144,7 @@ class AppointmentHtmlBuilder:
             'resceduled_appointments_count': self.resceduled_appointments_count,
             'reminder': self.reminder,
             'icon': icon,
+            'appointment_choices': self.appointment_choices,
         })
         
 
