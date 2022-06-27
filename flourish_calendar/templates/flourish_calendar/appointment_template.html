@@ -6,6 +6,7 @@
     data-toggle="popover" 
     title="<a target='__blank'
         href='/subject/{{dashboard_type}}/{{subject_identifier}}/'>Dashboard</a>" 
+
     data-content="Visit Code : {{visit_code}}<br> Status : {{status}}
     <br/> 
     
@@ -16,10 +17,19 @@
         <hr>
 
         {% for choice in appointment_choices %}
-            <a href='#'>{{choice}}</a>
+            {% if request.GET.month %}
+                <a href='{{ request.path}}?month={{request.GET.month}}&choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}'>{{choice.1}}</a>
+            {% else %}
+                <a href='{{ request.path}}?choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}'>{{choice.1}}</a>
+            {% endif %}
+            
         {% endfor %}">
         
-        {{subject_identifier}}
+        {% if status_color %}
+            {{subject_identifier}}
+        {% else %}
+            <span style="color: black">{{ subject_identifier }}</span>
+        {% endif %}
         {{icon}}
     </button>
 </div>

@@ -2,7 +2,7 @@ import imp
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 from ..model_wrappers import ReminderModelWrapper
-from ..models import Reminder
+from ..models import Reminder, AppointmentStatus
 from ..choices import APPT_COLOR
 from django.template.loader import render_to_string
 
@@ -18,9 +18,10 @@ from edc_appointment.choices import (
 class AppointmentHtmlBuilder:
     child_appointment_model = 'flourish_child.appointment'
 
-    def __init__(self, appointment: Appointment) -> None:
+    def __init__(self, appointment: Appointment, request) -> None:
         self._appointment = appointment
         self._subject_identifier = self._appointment.subject_identifier
+        self.request = request
 
     @property
     def children_appointment_cls(self):
@@ -71,18 +72,39 @@ class AppointmentHtmlBuilder:
 
     @property
     def status_color(self):
-        status = self._appointment.appt_status
+        
+        # ('green', 'red', 'grey', 'yellow')
+        
+        status = None
+        
+        try:
+            appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier)
+        except AppointmentStatus.DoesNotExist:
+            pass
+            # status = self._appointment.appt_status
 
-        if status == NEW_APPT:
-            return 'label-warning'
-        elif status == COMPLETE_APPT:
-            return 'label-success'
-        elif status == INCOMPLETE_APPT:
-            return 'label-info'
-        elif status == CANCELLED_APPT:
-            return 'label-warning'
-        elif status == IN_PROGRESS_APPT:
-            return 'label-default'
+            # if status == NEW_APPT:
+            #     status =  'label-warning'
+            # elif status == COMPLETE_APPT:
+            #     status = 'label-success'
+            # elif status == INCOMPLETE_APPT:
+            #     status = 'label-info'
+            # elif status == CANCELLED_APPT:
+            #     status = 'label-warning'
+            # elif status == IN_PROGRESS_APPT:
+            #     status = 'label-default'
+            
+        else:
+            if appt.color == 'green':
+                status =  'label-success'
+            elif appt.color == 'red':
+                status = 'label-danger'
+            elif appt.color == 'grey':
+                status = 'label-default'
+            elif appt.color == 'yellow':
+                status =  'label-warning'
+            
+        return status
 
     @property
     def subject_identifier(self):
@@ -122,7 +144,11 @@ class AppointmentHtmlBuilder:
     
     @property
     def appointment_choices(self):
-        return dict(APPT_COLOR).values()
+        colors = ('green', 'red', 'grey', 'yellow')
+        
+        color_dictionary = zip(colors, dict(APPT_COLOR).values())
+    
+        return color_dictionary
 
     @property
     def add_reschedule_reason(self):
@@ -145,7 +171,8 @@ class AppointmentHtmlBuilder:
             'reminder': self.reminder,
             'icon': icon,
             'appointment_choices': self.appointment_choices,
-        })
+            
+        }, request=self.request)
         
 
         return view
