@@ -1,10 +1,10 @@
 
 from ..models import AppointmentStatus
-
+import datetime
 class AppointmentHelper:
     
     @staticmethod
-    def change_color(subject_identifier, visit_code, color):
+    def change_color(subject_identifier, visit_code, color, appt_date):
         
         if subject_identifier and visit_code and color:
             
@@ -13,6 +13,7 @@ class AppointmentHelper:
                 appt = AppointmentStatus.objects.get(
                     subject_identifier=subject_identifier,
                     visit_code = visit_code,
+                    appt_date= datetime.datetime.fromisoformat(appt_date).date()
                 )
                 
             except AppointmentStatus.DoesNotExist:
@@ -20,7 +21,8 @@ class AppointmentHelper:
                 AppointmentStatus.objects.create(
                     subject_identifier=subject_identifier,
                     visit_code = visit_code,
-                    color = color
+                    color = color,
+                    appt_date= datetime.datetime.fromisoformat(appt_date).date()
                 )
                 
             else:

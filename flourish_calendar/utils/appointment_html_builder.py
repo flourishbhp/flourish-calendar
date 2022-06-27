@@ -81,19 +81,6 @@ class AppointmentHtmlBuilder:
             appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier)
         except AppointmentStatus.DoesNotExist:
             pass
-            # status = self._appointment.appt_status
-
-            # if status == NEW_APPT:
-            #     status =  'label-warning'
-            # elif status == COMPLETE_APPT:
-            #     status = 'label-success'
-            # elif status == INCOMPLETE_APPT:
-            #     status = 'label-info'
-            # elif status == CANCELLED_APPT:
-            #     status = 'label-warning'
-            # elif status == IN_PROGRESS_APPT:
-            #     status = 'label-default'
-            
         else:
             if appt.color == 'green':
                 status =  'label-success'
@@ -171,7 +158,7 @@ class AppointmentHtmlBuilder:
             'reminder': self.reminder,
             'icon': icon,
             'appointment_choices': self.appointment_choices,
-            
+            'date': self._appointment.appt_datetime.date().isoformat()
         }, request=self.request)
         
 

@@ -25,11 +25,14 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         subject_identifier = request.GET.get('subject_identifier', None)
         visit_code = request.GET.get('visit_code', None)
         color = request.GET.get('choice', None)
+        date = request.GET.get('date', None)
+        
         
         AppointmentHelper.change_color(
             subject_identifier=subject_identifier,
             visit_code=visit_code,
-            color=color
+            color=color,
+            appt_date=date
         )
         
         return super().get(request, *args, **kwargs)

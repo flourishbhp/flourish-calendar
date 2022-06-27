@@ -18,9 +18,9 @@
 
         {% for choice in appointment_choices %}
             {% if request.GET.month %}
-                <a href='{{ request.path}}?month={{request.GET.month}}&choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}'>{{choice.1}}</a>
+                <a href='{{ request.path}}?month={{request.GET.month}}&choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}&date={{date}}'>{{choice.1}}</a>
             {% else %}
-                <a href='{{ request.path}}?choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}'>{{choice.1}}</a>
+                <a href='{{ request.path}}?choice={{choice.0}}&visit_code={{visit_code}}&subject_identifier={{ subject_identifier}}&date={{date}}'>{{choice.1}}</a>
             {% endif %}
             
         {% endfor %}">
