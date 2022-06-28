@@ -2,7 +2,10 @@ import imp
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 from ..model_wrappers import ReminderModelWrapper
-from ..models import Reminder
+from ..models import Reminder, AppointmentStatus
+from ..choices import APPT_COLOR
+from django.template.loader import render_to_string
+
 from edc_appointment.choices import (
     NEW_APPT,
     IN_PROGRESS_APPT,
@@ -15,9 +18,10 @@ from edc_appointment.choices import (
 class AppointmentHtmlBuilder:
     child_appointment_model = 'flourish_child.appointment'
 
-    def __init__(self, appointment: Appointment) -> None:
+    def __init__(self, appointment: Appointment, request) -> None:
         self._appointment = appointment
         self._subject_identifier = self._appointment.subject_identifier
+        self.request = request
 
     @property
     def children_appointment_cls(self):
@@ -68,18 +72,26 @@ class AppointmentHtmlBuilder:
 
     @property
     def status_color(self):
-        status = self._appointment.appt_status
-
-        if status == NEW_APPT:
-            return 'label-warning'
-        elif status == COMPLETE_APPT:
-            return 'label-success'
-        elif status == INCOMPLETE_APPT:
-            return 'label-info'
-        elif status == CANCELLED_APPT:
-            return 'label-warning'
-        elif status == IN_PROGRESS_APPT:
-            return 'label-default'
+        
+        # ('green', 'red', 'grey', 'yellow')
+        
+        status = None
+        
+        try:
+            appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier)
+        except AppointmentStatus.DoesNotExist:
+            pass
+        else:
+            if appt.color == 'green':
+                status =  'label-success'
+            elif appt.color == 'red':
+                status = 'label-danger'
+            elif appt.color == 'grey':
+                status = 'label-default'
+            elif appt.color == 'yellow':
+                status =  'label-warning'
+            
+        return status
 
     @property
     def subject_identifier(self):
@@ -116,6 +128,14 @@ class AppointmentHtmlBuilder:
     def reminder(self):
         reminder = Reminder()
         return ReminderModelWrapper(model_obj=reminder)
+    
+    @property
+    def appointment_choices(self):
+        colors = ('green', 'red', 'grey', 'yellow')
+        
+        color_dictionary = zip(colors, dict(APPT_COLOR).values())
+    
+        return color_dictionary
 
     @property
     def add_reschedule_reason(self):
@@ -128,23 +148,19 @@ class AppointmentHtmlBuilder:
             icon = '📞'
         else:
             icon = '👩'
-        view = f'''\
-        <div class="appointment-container" style="border:none">
-            <button 
-            class="label {self.status_color} appointment" 
-            id="appointment"
-            data-toggle="popover" 
-            title="<a target='__blank' \
-                href='/subject/{dashboard_type}/{self.subject_identifier}/'>Dashboard</a>" 
-            data-content="Visit Code : {self.visit_code}<br> Status : {self.status} \
-            <br> Reschedules: {self.resceduled_appointments_count}\
-             <br> <a href='{self.reminder.href}title={self.subject_identifier} Note'>Add Note</a> ">
-                {self.subject_identifier}
-                {icon}
-            </button>
-     
-        </div>
-        '''
+        view = render_to_string('flourish_calendar/appointment_template.html', {
+            'status_color': self.status_color,
+            'dashboard_type': dashboard_type,
+            'subject_identifier': self.subject_identifier,
+            'visit_code': self.visit_code,
+            'status': self.status,
+            'resceduled_appointments_count': self.resceduled_appointments_count,
+            'reminder': self.reminder,
+            'icon': icon,
+            'appointment_choices': self.appointment_choices,
+            'date': self._appointment.appt_datetime.date().isoformat()
+        }, request=self.request)
+        
 
         return view
 
