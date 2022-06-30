@@ -11,3 +11,8 @@ APPT_COLOR = (
     ('new', 'New'), # grey
     ('recall', 'Recall'), # yellow
 )
+
+REMINDER_STATUS = (
+    ('done', 'Done'),
+    ('new', 'New')
+)

@@ -22,9 +22,11 @@ class ReminderAdmin(
                 'title',
                 'type',
                 'note',
+                'status'
             )}
          ), audit_fieldset_tuple)
 
     radio_fields = {
-        'type': admin.VERTICAL
+        'type': admin.VERTICAL,
+        'status': admin.VERTICAL,
     }
