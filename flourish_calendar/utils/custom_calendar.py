@@ -4,6 +4,7 @@ from datetime import datetime
 from django.apps import apps as django_apps
 from django.db.models import Q
 from edc_appointment.models import Appointment
+from requests import request
 
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
@@ -16,6 +17,7 @@ class CustomCalendar(HTMLCalendar):
         self.month = month
         self.filter = request.session.get('filter', None)
         self.search_term = request.session.get('search_term', '')
+        self.request = request
         super(CustomCalendar, self).__init__()
 
     @property
@@ -41,7 +43,7 @@ class CustomCalendar(HTMLCalendar):
 
         for event in events_per_day:
             if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
-                d += AppointmentHtmlBuilder(event).view_build()
+                d += AppointmentHtmlBuilder(event, self.request).view_build()
                 appointment_counter += 1
             elif isinstance(event, Reminder):
                 d += ReminderHtmlBuilder(event).view_build()

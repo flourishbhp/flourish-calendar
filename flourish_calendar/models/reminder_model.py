@@ -3,15 +3,14 @@ from tabnanny import verbose
 from edc_base.model_mixins import BaseUuidModel
 from django.db import models
 from django.utils import timezone
-from ..choices import NOTE_TYPE
+from ..choices import NOTE_TYPE, REMINDER_STATUS
 
 class Reminder(BaseUuidModel):
     title = models.CharField(max_length=20)
     type = models.CharField(choices=NOTE_TYPE, max_length=20)
+    status =  models.CharField(choices=REMINDER_STATUS, max_length=20)
     datetime = models.DateTimeField(default=timezone.now())
     note = models.TextField(blank=True, null=True)
-
-    # status = models.CharField(max_length=29, choices=APPT_STATUS, blank=True, null=True)
 
     class Meta(BaseUuidModel.Meta):
         app_label = 'flourish_calendar'
