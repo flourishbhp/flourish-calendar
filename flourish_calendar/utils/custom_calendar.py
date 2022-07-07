@@ -6,9 +6,11 @@ from django.db.models import Q
 from edc_appointment.models import Appointment
 from requests import request
 
+from flourish_calendar.models import participant_note
+
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
-from ..models import Reminder
+from ..models import Reminder, ParticipantNote
 
 
 class CustomCalendar(HTMLCalendar):
@@ -36,10 +38,15 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, Reminder):
                 if event.datetime.day == day:
                     events_per_day.append(event)
+                    
+            elif isinstance(event, ParticipantNote):
+                if event.date.day == day:
+                    events_per_day.append(event)
 
         d = ''
         appointment_counter = 0
         reminder_counter = 0
+        participant_note_counter = 0
 
         for event in events_per_day:
             if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
@@ -48,6 +55,10 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, Reminder):
                 d += ReminderHtmlBuilder(event).view_build()
                 reminder_counter += 1
+                
+            elif isinstance(event, ParticipantNote):
+                d += ReminderHtmlBuilder(event).view_build()
+                participant_note_counter += 1
 
         if day != 0:
             today_day = datetime.today().day
@@ -55,7 +66,7 @@ class CustomCalendar(HTMLCalendar):
                 <td>
                     <span class='date {"today" if day == today_day else ""}'>{day}</span>
                     <ul style="height: 200px; overflow: scroll;"> {d} </ul>
-                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) N ({reminder_counter}) </p>
+                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
                 </td>
                 '''
         return '<td></td>'
@@ -105,6 +116,13 @@ class CustomCalendar(HTMLCalendar):
                 datetime__year=self.year, datetime__month=self.month
             )
             events = list(reminders)
+            
+        elif self.filter == 'participant_notes':
+            participant_notes = ParticipantNote.objects.filter(
+                date__year=self.year, date__month=self.month
+            )
+            events = list(participant_notes)
+            
 
         else:
             caregiver_appointments = Appointment.objects.filter(
@@ -116,10 +134,15 @@ class CustomCalendar(HTMLCalendar):
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
             )
-
+            
+            participant_notes = ParticipantNote.objects.filter(
+                date__year=self.year, date__month=self.month
+            )
             events.extend(list(reminders))
+            events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
+            
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
