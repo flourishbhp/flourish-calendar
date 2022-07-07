@@ -1,8 +1,8 @@
 import imp
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
-from ..model_wrappers import ReminderModelWrapper
-from ..models import Reminder, AppointmentStatus
+from ..model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
+from ..models import Reminder, AppointmentStatus, ParticipantNote
 from ..choices import APPT_COLOR
 from django.template.loader import render_to_string
 
@@ -125,9 +125,9 @@ class AppointmentHtmlBuilder:
             return None
 
     @property
-    def reminder(self):
-        reminder = Reminder()
-        return ReminderModelWrapper(model_obj=reminder)
+    def participant_note_wrapper(self):
+        participent_note = ParticipantNote()
+        return ParticipantNoteModelWrapper(model_obj=participent_note)
     
     @property
     def appointment_choices(self):
@@ -140,7 +140,7 @@ class AppointmentHtmlBuilder:
     @property
     def add_reschedule_reason(self):
         # if self.resceduled_appointments_count:
-        return f'''<br> <a href='{self.reminder.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
+        return f'''<br> <a href='{self.participant_note_wrapper.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
 
     def _html(self, dashboard_type):
         icon = None
@@ -155,7 +155,7 @@ class AppointmentHtmlBuilder:
             'visit_code': self.visit_code,
             'status': self.status,
             'resceduled_appointments_count': self.resceduled_appointments_count,
-            'reminder': self.reminder,
+            'participant_note_wrapper': self.participant_note_wrapper,
             'icon': icon,
             'appointment_choices': self.appointment_choices,
             'date': self._appointment.appt_datetime.date().isoformat()

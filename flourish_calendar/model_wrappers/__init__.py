@@ -1,1 +1,2 @@
 from .reminder_model_wrapper import ReminderModelWrapper
+from .participant_note_model_wrapper import ParticipantNoteModelWrapper

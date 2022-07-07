@@ -1,1 +1,2 @@
 from .reminder_admin import ReminderAdmin
+from .participant_note_admin import ParticipantNoteAdmin
