@@ -1,0 +1,28 @@
+
+<div class="appointment-container" style="border:none;">
+    <button 
+    class="label {{status_color}} appointment" 
+    id="appointment"
+    data-toggle="popover" 
+    title="<a target='__blank'
+        href='/subject/{{dashboard_type}}/{{subject_identifier}}/'>Dashboard</a>" 
+
+    data-content="
+    <br>
+    <a href='{{link}}'>Change Details</a>
+    <br>
+    {% if note %}
+     {{ note}}
+     {% else %}
+     No note provided
+    {% endif %}
+    ">
+        
+        {% if status_color %}
+            {{subject_identifier}}
+        {% else %}
+            <span style="color: black">{{ subject_identifier }}</span>
+        {% endif %}
+        <span style="margin-top: 3px">{{icon}}</span>
+    </button>
+</div>

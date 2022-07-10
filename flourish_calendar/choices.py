@@ -16,3 +16,10 @@ REMINDER_STATUS = (
     ('done', 'Done'),
     ('new', 'New')
 )
+
+COLORS = (
+    ('green', 'Green'),
+    ('red', 'Red'),
+    ('grey', 'Grey'),
+    ('yellow', 'Yellow')    
+)
