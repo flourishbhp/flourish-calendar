@@ -9,7 +9,7 @@ class Reminder(BaseUuidModel):
     title = models.CharField(max_length=20)
     type = models.CharField(choices=NOTE_TYPE, max_length=20)
     status =  models.CharField(choices=REMINDER_STATUS, max_length=20)
-    datetime = models.DateTimeField(default=timezone.now())
+    datetime = models.DateTimeField()
     note = models.TextField(blank=True, null=True)
 
     class Meta(BaseUuidModel.Meta):
