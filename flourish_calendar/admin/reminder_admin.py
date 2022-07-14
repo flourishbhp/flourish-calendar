@@ -22,16 +22,10 @@ class ReminderAdmin(
             'fields': (
                 'datetime',
                 'title',
-                'type',
                 'note',
-                'status'
             )}
          ), audit_fieldset_tuple)
 
-    radio_fields = {
-        'type': admin.VERTICAL,
-        'status': admin.VERTICAL,
-    }
     
     def redirect_url_on_delete(self, request, obj_display, obj_id):
         url = settings.DASHBOARD_URL_NAMES.get('flourish_calendar_url')
