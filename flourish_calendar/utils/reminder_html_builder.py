@@ -45,6 +45,13 @@ class ReminderHtmlBuilder:
             
         return status
     
+    @property
+    def _dashboard_type(self):
+        if len(self._reminder.subject_identifier) == 16:
+            return 'subject_dashboard'
+        else:
+            return 'child_dashboard'
+    
     def _participant_notes_html(self):
         view = "<div class='item participant_notes'><li>"
 
@@ -63,7 +70,8 @@ class ReminderHtmlBuilder:
             'icon': icon,
             'note': self._reminder.description,
             'color': self._reminder.color,
-            'status_color' : self.status_color
+            'status_color' : self.status_color,
+            'dashboard_type': self._dashboard_type
             
         })
 
