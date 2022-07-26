@@ -23,19 +23,6 @@ class ReminderHtmlBuilder:
             </a>
             """
 
-        if self._reminder.status:
-            view += f"""\
-                <br/>
-                Status : {self.status}
-                <br/>
-                """
-        else:
-            view += f"""\
-                <br/>
-                Status : Not Set
-                <br/>
-                """
-
 
         view += "</li></div>"
 
