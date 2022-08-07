@@ -8,7 +8,6 @@ NOTE_TYPE = (
 APPT_COLOR = (
     ('done', 'Done'), # green
     ('cancelled', 'Cancelled'), # red
-    ('new', 'New'), # grey
     ('recall', 'Recall'), # yellow
 )
 

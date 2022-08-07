@@ -131,7 +131,7 @@ class AppointmentHtmlBuilder:
     
     @property
     def appointment_choices(self):
-        colors = ('green', 'red', 'grey', 'yellow')
+        colors = ('green', 'red', 'yellow')
         
         color_dictionary = zip(colors, dict(APPT_COLOR).values())
     
