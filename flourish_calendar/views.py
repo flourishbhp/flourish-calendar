@@ -4,45 +4,49 @@ from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 from edc_appointment.models import Appointment
 from .utils import DateHelper, CustomCalendar
-from .model_wrappers import ReminderModelWrapper
-from .models import Reminder
+from .model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
+from .models import Reminder, ParticipantNote
 from .utils import AppointmentHelper
+
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
     navbar_name = 'flourish_calendar'
     navbar_selected_item = 'calendar'
     model = Appointment
     template_name = 'flourish_calendar/calendar.html'
-    
+
     @property
     def new_reminder_wrapper(self):
         reminder = Reminder()
         reminder_wrapper = ReminderModelWrapper(model_obj=reminder)
         return reminder_wrapper
-    
+
+    @property
+    def new_participant_wrapper(self):
+        participant_note = ParticipantNote()
+        participant_note_wrapper = ParticipantNoteModelWrapper(
+            model_obj=participant_note
+        )
+        return participant_note_wrapper
+
     def get(self, request, *args, **kwargs):
-        
+
         subject_identifier = request.GET.get('subject_identifier', None)
         visit_code = request.GET.get('visit_code', None)
         color = request.GET.get('choice', None)
         date = request.GET.get('date', None)
-        
-        
+
         AppointmentHelper.change_color(
             subject_identifier=subject_identifier,
             visit_code=visit_code,
             color=color,
             appt_date=date
         )
-        
+
         return super().get(request, *args, **kwargs)
 
-        
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-
 
         month = self.request.GET.get('month', None)
 
@@ -71,5 +75,6 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         context['filter'] = self.request.session.get('filter', None)
         context['search_term'] = self.request.session.get('search_term', '')
         context['new_reminder_url'] = self.new_reminder_wrapper.href
+        context['new_participant_note_url'] = self.new_participant_wrapper.href
 
         return context
