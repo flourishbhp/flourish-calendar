@@ -1,8 +1,10 @@
 
-from edc_base.model_mixins import BaseUuidModel
 from django.db import models
 from django.utils import timezone
+from edc_base.model_mixins import BaseUuidModel
+
 from ..choices import COLORS, REMINDER_STATUS
+
 
 class ParticipantNote(BaseUuidModel):
     date = models.DateField()

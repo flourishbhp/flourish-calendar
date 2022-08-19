@@ -1,12 +1,14 @@
-from django.views import generic
 from django.utils.safestring import mark_safe
+from django.views import generic
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
+
 from edc_appointment.models import Appointment
-from .utils import DateHelper, CustomCalendar
+
 from .model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
 from .models import Reminder, ParticipantNote
 from .utils import AppointmentHelper
+from .utils import DateHelper, CustomCalendar
 
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
@@ -69,12 +71,13 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
         html_cal = cal.formatmonth(withyear=True)
 
-        context['prev_month'] = DateHelper.prev_month(d)
-        context['next_month'] = DateHelper.next_month(d)
-        context['calendar'] = mark_safe(html_cal)
-        context['filter'] = self.request.session.get('filter', None)
-        context['search_term'] = self.request.session.get('search_term', '')
-        context['new_reminder_url'] = self.new_reminder_wrapper.href
-        context['new_participant_note_url'] = self.new_participant_wrapper.href
+        context.update(
+            prev_month=DateHelper.prev_month(d),
+            next_month=DateHelper.next_month(d),
+            calendar=mark_safe(html_cal),
+            filter=self.request.session.get('filter', None),
+            search_term=self.request.session.get('search_term', ''),
+            new_reminder_url=self.new_reminder_wrapper.href,
+            new_participant_note_url=self.new_participant_wrapper.href)
 
         return context
