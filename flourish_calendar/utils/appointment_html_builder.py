@@ -1,9 +1,6 @@
 import imp
+
 from django.apps import apps as django_apps
-from edc_appointment.models import Appointment
-from ..model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
-from ..models import Reminder, AppointmentStatus, ParticipantNote
-from ..choices import APPT_COLOR
 from django.template.loader import render_to_string
 
 from edc_appointment.choices import (
@@ -13,6 +10,11 @@ from edc_appointment.choices import (
     COMPLETE_APPT,
     CANCELLED_APPT
 )
+from edc_appointment.models import Appointment
+
+from ..choices import APPT_COLOR
+from ..model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
+from ..models import Reminder, AppointmentStatus, ParticipantNote
 
 
 class AppointmentHtmlBuilder:
@@ -72,25 +74,25 @@ class AppointmentHtmlBuilder:
 
     @property
     def status_color(self):
-        
+
         # ('green', 'red', 'grey', 'yellow')
-        
+
         status = None
-        
+
         try:
             appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier)
         except AppointmentStatus.DoesNotExist:
             pass
         else:
             if appt.color == 'green':
-                status =  'label-success'
+                status = 'label-success'
             elif appt.color == 'red':
                 status = 'label-danger'
             elif appt.color == 'grey':
                 status = 'label-default'
             elif appt.color == 'yellow':
-                status =  'label-warning'
-            
+                status = 'label-warning'
+
         return status
 
     @property
@@ -128,13 +130,13 @@ class AppointmentHtmlBuilder:
     def participant_note_wrapper(self):
         participent_note = ParticipantNote()
         return ParticipantNoteModelWrapper(model_obj=participent_note)
-    
+
     @property
     def appointment_choices(self):
         colors = ('green', 'red', 'yellow')
-        
+
         color_dictionary = zip(colors, dict(APPT_COLOR).values())
-    
+
         return color_dictionary
 
     @property
@@ -158,9 +160,9 @@ class AppointmentHtmlBuilder:
             'participant_note_wrapper': self.participant_note_wrapper,
             'icon': icon,
             'appointment_choices': self.appointment_choices,
-            'date': self._appointment.appt_datetime.date().isoformat()
+            'date': self._appointment.appt_datetime.date().isoformat(),
+            'is_not_sec': 'sec' not in self._appointment.schedule_name
         }, request=self.request)
-        
 
         return view
 

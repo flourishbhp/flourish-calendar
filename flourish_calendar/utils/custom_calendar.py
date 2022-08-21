@@ -122,7 +122,15 @@ class CustomCalendar(HTMLCalendar):
                 date__year=self.year, date__month=self.month
             )
             events = list(participant_notes)
+        
+        elif self.filter == 'follow_up':
             
+            participant_notes = ParticipantNote.objects.filter(
+                title__icontains = 'Follow Up',
+                date__year=self.year, date__month=self.month
+            )
+            
+            events = list(participant_notes)
 
         else:
             caregiver_appointments = Appointment.objects.filter(

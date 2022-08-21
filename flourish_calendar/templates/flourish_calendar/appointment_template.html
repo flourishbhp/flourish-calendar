@@ -7,12 +7,12 @@
     title="<a target='__blank'
         href='/subject/{{dashboard_type}}/{{subject_identifier}}/'>Dashboard</a>" 
 
-    data-content="Visit Code : {{visit_code}}<br> Status : {{status}}
+    data-content="Visit Code : {{visit_code}}<br> Status : {{status}} {{ model_obj}}
     <br/> 
     
     Reschedules: {{resceduled_appointments_count}}
         <br> <a href='{{participant_note_wrapper.href}}subject_identifier={{subject_identifier}}'>Add Description</a>
-        <br> <a href='{{participant_note_wrapper.href}}subject_identifier={{subject_identifier}}&title=Follow Up Schedule'>Add Follow UP Schedule</a>
+        {% if is_not_sec and dashboard_type == 'child_dashboard'  %} <br> <a href='{{participant_note_wrapper.href}}subject_identifier={{subject_identifier}}&title=Follow Up Schedule'>Add Follow UP Schedule</a> {% endif %}
         <br/>
         <hr>
 
