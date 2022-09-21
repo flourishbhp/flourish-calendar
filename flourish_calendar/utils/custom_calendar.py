@@ -3,17 +3,18 @@ from datetime import datetime
 
 from django.apps import apps as django_apps
 from django.db.models import Q
-from edc_appointment.models import Appointment
 from requests import request
-
+from edc_appointment.constants import NEW_APPT
+from edc_appointment.models import Appointment
 from flourish_calendar.models import participant_note
 
+from ..models import Reminder, ParticipantNote
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
-from ..models import Reminder, ParticipantNote
 
 
 class CustomCalendar(HTMLCalendar):
+
     def __init__(self, year=None, month=None, request=None):
         self.year = year
         self.month = month
@@ -38,7 +39,7 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, Reminder):
                 if event.datetime.day == day:
                     events_per_day.append(event)
-                    
+
             elif isinstance(event, ParticipantNote):
                 if event.date.day == day:
                     events_per_day.append(event)
@@ -55,7 +56,7 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, Reminder):
                 d += ReminderHtmlBuilder(event).view_build()
                 reminder_counter += 1
-                
+
             elif isinstance(event, ParticipantNote):
                 d += ReminderHtmlBuilder(event).view_build()
                 participant_note_counter += 1
@@ -102,47 +103,58 @@ class CustomCalendar(HTMLCalendar):
 
         elif self.filter == 'caregiver':
             caregiver_appointments = Appointment.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                appt_status=NEW_APPT)
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = self.children_appointment_cls.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                appt_status=NEW_APPT)
             events = list(child_appointments)
-
 
         elif self.filter == 'reminder':
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
             )
             events = list(reminders)
-            
+
         elif self.filter == 'participant_notes':
             participant_notes = ParticipantNote.objects.filter(
                 date__year=self.year, date__month=self.month
             )
             events = list(participant_notes)
-        
+
         elif self.filter == 'follow_up':
-            
+
             participant_notes = ParticipantNote.objects.filter(
-                title__icontains = 'Follow Up',
+                title__icontains='Follow Up',
                 date__year=self.year, date__month=self.month
             )
-            
+
             events = list(participant_notes)
 
         else:
             caregiver_appointments = Appointment.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                appt_status=NEW_APPT)
 
             child_appointments = self.children_appointment_cls.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                appt_status=NEW_APPT)
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
             )
-            
+
             participant_notes = ParticipantNote.objects.filter(
                 date__year=self.year, date__month=self.month
             )
@@ -150,7 +162,6 @@ class CustomCalendar(HTMLCalendar):
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
-            
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
@@ -158,4 +169,3 @@ class CustomCalendar(HTMLCalendar):
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f'{self.formatweek(week, events)}\n'
         return cal
-    
