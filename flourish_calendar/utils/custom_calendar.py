@@ -6,7 +6,6 @@ from django.db.models import Q
 from requests import request
 from edc_appointment.constants import NEW_APPT
 from edc_appointment.models import Appointment
-from flourish_calendar.models import participant_note
 
 from ..models import Reminder, ParticipantNote
 from .appointment_html_builder import AppointmentHtmlBuilder

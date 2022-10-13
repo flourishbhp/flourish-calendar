@@ -1,3 +1,3 @@
 from .reminder_model import Reminder
-from .appointment_status import AppointmentStatus
-from .participant_note import ParticipantNote
+from .appointment_status_model import AppointmentStatus
+from .participant_note_model import ParticipantNote
