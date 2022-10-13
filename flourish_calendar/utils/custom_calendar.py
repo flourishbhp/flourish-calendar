@@ -3,11 +3,11 @@ from datetime import datetime
 
 from django.apps import apps as django_apps
 from django.db.models import Q
-from requests import request
 from edc_appointment.constants import NEW_APPT
 from edc_appointment.models import Appointment
+from requests import request
 
-from ..models import Reminder, ParticipantNote
+from ..models import ParticipantNote, Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
 
@@ -102,18 +102,14 @@ class CustomCalendar(HTMLCalendar):
 
         elif self.filter == 'caregiver':
             caregiver_appointments = Appointment.objects.filter(
-                ~Q(user_modified='flourish') & q_objects,
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month,
-                appt_status=NEW_APPT)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+            
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = self.children_appointment_cls.objects.filter(
-                ~Q(user_modified='flourish') & q_objects,
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month,
-                appt_status=NEW_APPT)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+            
             events = list(child_appointments)
 
         elif self.filter == 'reminder':
@@ -139,16 +135,11 @@ class CustomCalendar(HTMLCalendar):
 
         else:
             caregiver_appointments = Appointment.objects.filter(
-                ~Q(user_modified='flourish') & q_objects,
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month,
-                appt_status=NEW_APPT)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
 
             child_appointments = self.children_appointment_cls.objects.filter(
-                ~Q(user_modified='flourish') & q_objects,
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month,
-                appt_status=NEW_APPT)
+                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
