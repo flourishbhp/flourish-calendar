@@ -1,7 +1,9 @@
 from django import forms
-from django.forms import ValidationError
-from ..models import ParticipantNote
 from django.apps import apps as django_apps
+from django.forms import ValidationError
+
+from ..models import ParticipantNote
+
 
 class ParticipantNoteForm(forms.ModelForm):
     

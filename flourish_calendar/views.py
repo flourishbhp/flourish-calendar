@@ -1,14 +1,12 @@
 from django.utils.safestring import mark_safe
 from django.views import generic
+from edc_appointment.models import Appointment
 from edc_base.view_mixins import EdcBaseViewMixin
 from edc_navbar import NavbarViewMixin
 
-from edc_appointment.models import Appointment
-
-from .model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
-from .models import Reminder, ParticipantNote
-from .utils import AppointmentHelper
-from .utils import DateHelper, CustomCalendar
+from .model_wrappers import ParticipantNoteModelWrapper, ReminderModelWrapper
+from .models import ParticipantNote, Reminder
+from .utils import AppointmentHelper, CustomCalendar, DateHelper
 
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
