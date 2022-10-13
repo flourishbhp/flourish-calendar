@@ -102,14 +102,16 @@ class CustomCalendar(HTMLCalendar):
 
         elif self.filter == 'caregiver':
             caregiver_appointments = Appointment.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
-            
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,)
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = self.children_appointment_cls.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
-            
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,)
             events = list(child_appointments)
 
         elif self.filter == 'reminder':
@@ -135,11 +137,14 @@ class CustomCalendar(HTMLCalendar):
 
         else:
             caregiver_appointments = Appointment.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month)
 
             child_appointments = self.children_appointment_cls.objects.filter(
-                (Q(appt_datetime__year=self.year) & Q(appt_datetime__month=self.month)) & q_objects)
-
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,)
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month
