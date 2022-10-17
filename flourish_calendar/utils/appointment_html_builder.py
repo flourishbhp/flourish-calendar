@@ -105,11 +105,12 @@ class AppointmentHtmlBuilder:
 
     @property
     def previous_appointments(self):
+        # TODO: Change naming
         return self._appointment.history.all()
 
     @property
     def resceduled_appointments_count(self):
-
+        # TODO: Change naming
         prev_appt = self.previous_appointments.values_list(
             'appt_datetime__date', flat=True)
         prev_appt_set = set(prev_appt)
@@ -117,7 +118,7 @@ class AppointmentHtmlBuilder:
 
     @property
     def last_appointment(self):
-
+        # TODO: Change naming
         appt = self.previous_appointments.exclude(
             timepoint_datetime__date=self._appointment.appt_datetime.date())
 
