@@ -1,20 +1,19 @@
 from django.contrib import admin
-from ..models import ParticipantNote
-from ..forms import ParticipantNoteForm
-from ..admin_site import flourish_calendar_admin
 from edc_model_admin import audit_fieldset_tuple
 from edc_model_admin.model_admin_basic_mixin import ModelAdminBasicMixin
 from edc_model_admin.model_admin_next_url_redirect_mixin import ModelAdminNextUrlRedirectMixin
 
+from ..admin_site import flourish_calendar_admin
+from ..forms import ParticipantNoteForm
+from ..models import ParticipantNote
+
 
 @admin.register(ParticipantNote, site=flourish_calendar_admin)
-class ParticipantNoteAdmin(
-        ModelAdminBasicMixin,
-        ModelAdminNextUrlRedirectMixin,
-        admin.ModelAdmin):
+class ParticipantNoteAdmin(ModelAdminBasicMixin, ModelAdminNextUrlRedirectMixin,
+                           admin.ModelAdmin):
 
     form = ParticipantNoteForm
-    
+
     fieldsets = (
         (None, {
             'fields': (
