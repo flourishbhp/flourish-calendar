@@ -37,17 +37,15 @@ class ParticipantNoteForm(forms.ModelForm):
 
         cleaned_data = super().clean()
 
-        subject_identifier = cleaned_data.get('subject_identifier')  # can never be blank
-
-        consent_obj = self.subject_consent_model_cls.objects.filter(
-            subject_identifier=subject_identifier)
+        subject_identifier = cleaned_data.get('subject_identifier')
 
         child_consent = self.child_consent_model_cls.objects.filter(
             subject_identifier=subject_identifier)
 
-        if not consent_obj and not child_consent:
+        if not child_consent:
 
-            raise ValidationError({'subject_identifier': 'Subject identifier does not exist'})
+            raise ValidationError({'subject_identifier': 'Subject identifier for child does '
+                                   'not exist'})
 
         return cleaned_data
 
