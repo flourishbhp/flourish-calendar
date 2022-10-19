@@ -3,6 +3,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils import timezone
 from edc_base.model_mixins import BaseUuidModel
+
 from ..choices import COLORS, REMINDER_STATUS
 
 
