@@ -11,8 +11,7 @@ class ParticipantNote(BaseUuidModel):
     subject_identifier = models.CharField(max_length=25)
 
     title = models.CharField(max_length=20,
-                             # default='Follow Up Schedule'
-                             )
+                             default='Follow Up Schedule')
 
     description = models.TextField(blank=True,
                                    null=True)
