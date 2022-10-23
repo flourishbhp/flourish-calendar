@@ -3,9 +3,10 @@ from datetime import datetime
 
 from django.apps import apps as django_apps
 from django.db.models import Q
+from requests import request
+
 from edc_appointment.constants import NEW_APPT
 from edc_appointment.models import Appointment
-from requests import request
 
 from ..models import ParticipantNote, Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
@@ -104,14 +105,14 @@ class CustomCalendar(HTMLCalendar):
             caregiver_appointments = Appointment.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month,)
+                appt_datetime__month=self.month)
             events = list(caregiver_appointments)
 
         elif self.filter == 'children':
             child_appointments = self.children_appointment_cls.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month,)
+                appt_datetime__month=self.month)
             events = list(child_appointments)
 
         elif self.filter == 'reminder':
