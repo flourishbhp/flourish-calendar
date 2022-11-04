@@ -19,7 +19,9 @@
 
         <ul>
             {% for comment in participant_note_wrapper.comments %}
-                <li style='color : {{ comment.color }}'>{{ comment.description }}</li>
+                {% if comment.subject_identifier == subject_identifier %}
+                    <li style='color : {{ comment.color }}'>{{ comment.description }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
         <hr>
