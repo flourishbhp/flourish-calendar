@@ -13,3 +13,9 @@ class ParticipantNoteModelWrapper(ModelWrapper):
     @property
     def title(self):
         return self.object.title
+
+
+    @property
+    def comments(self):
+        commments = self.model_cls.objects.filter(title__icontains='comment')
+        return commments
