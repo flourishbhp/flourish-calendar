@@ -25,6 +25,13 @@
             {% endif %}
             
         {% endfor %}">
+
+        <ul>
+            {% for comment in participant_note_wrapper.comments %}
+                <li>{{ comment.title }}</li>
+            {% endfor %}
+        </ul>
+
         
         {% if status_color %}
             {{subject_identifier}}
