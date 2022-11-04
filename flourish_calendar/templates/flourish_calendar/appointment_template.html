@@ -15,6 +15,13 @@
         <br> <a href='{{participant_note_wrapper.href}}subject_identifier={{subject_identifier}}&title=Comment&date={{ date }}'>Add Comment</a>
         {% if is_not_sec and dashboard_type == 'child_dashboard'  %} <br> <a href='{{participant_note_wrapper.href}}subject_identifier={{subject_identifier}}&title=Follow Up Schedule'>Add Follow UP Schedule</a> {% endif %}
         <br/>
+        <br/>
+
+        <ul>
+            {% for comment in participant_note_wrapper.comments %}
+                <li style='color : {{ comment.color }}'>{{ comment.description }}</li>
+            {% endfor %}
+        </ul>
         <hr>
 
         {% for choice in appointment_choices %}
@@ -26,11 +33,7 @@
             
         {% endfor %}">
 
-        <ul>
-            {% for comment in participant_note_wrapper.comments %}
-                <li>{{ comment.title }}</li>
-            {% endfor %}
-        </ul>
+
 
         
         {% if status_color %}
