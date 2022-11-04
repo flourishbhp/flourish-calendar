@@ -17,7 +17,9 @@ class ParticipantNoteForm(forms.ModelForm):
         self.title = self.initial.get('title', None)
         
         
-        if self.title and self.title == 'Follow Up':
+        if self.title and \
+                ('follow up' in self.title.lower()) or \
+                ('comment' in self.title.lower()):
             self.fields['title'].widget.attrs['readonly'] = True
 
         
