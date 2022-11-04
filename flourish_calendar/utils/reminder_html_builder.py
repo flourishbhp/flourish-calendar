@@ -51,6 +51,12 @@ class ReminderHtmlBuilder:
             return 'subject_dashboard'
         else:
             return 'child_dashboard'
+
+
+    @property
+    def new_participant_note_wrapper(self):
+        participent_note = ParticipantNote()
+        return ParticipantNoteModelWrapper(model_obj=participent_note)
     
     def _participant_notes_html(self):
         view = "<div class='item participant_notes'><li>"
@@ -66,10 +72,12 @@ class ReminderHtmlBuilder:
             # 'status_color': self.status_color,
             # 'dashboard_type': dashboard_type,
             'subject_identifier': self._reminder.subject_identifier,
-            'link': participant_note_wrapper.href,
+            'participant_note_wrapper': participant_note_wrapper,
+            'new_participant_note_wrapper': self.new_participant_note_wrapper,
             'icon': icon,
             'note': self._reminder.description,
             'color': self._reminder.color,
+            'date': self._reminder.date,
             'status_color' : self.status_color,
             'dashboard_type': self._dashboard_type
             
