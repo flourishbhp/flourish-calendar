@@ -53,13 +53,13 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         # use today's date for the calendar
         d = DateHelper.get_date(month)
 
-        search_filter = self.request.GET.get('filter', "")
+        search_filter = self.request.GET.get('filter', None)
         search_term = self.request.GET.get('search_term', None)
 
-        if search_filter != self.request.session.get('filter', 'not-the-same-placeholder'):
+        if search_filter:
             self.request.session['filter'] = search_filter
 
-        if search_term != self.request.session.get('search_term', 'not-the-same-placeholder'):
+        if search_term:
             self.request.session['search_term'] = search_term
 
         # Instantiate our calendar class with today's year and date
@@ -69,12 +69,13 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
         html_cal = cal.formatmonth(withyear=True)
 
+
         context.update(
             prev_month=DateHelper.prev_month(d),
             next_month=DateHelper.next_month(d),
             calendar=mark_safe(html_cal),
-            filter=self.request.session.get('filter', None),
-            search_term=self.request.session.get('search_term', ''),
+            filter=search_filter,
+            search_term=search_term,
             new_reminder_url=self.new_reminder_wrapper.href,
             new_participant_note_url=self.new_participant_wrapper.href)
 
