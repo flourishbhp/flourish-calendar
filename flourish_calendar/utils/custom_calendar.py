@@ -159,6 +159,10 @@ class CustomCalendar(HTMLCalendar):
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
 
+
+        events = list(filter(lambda e: 'comment' not in e.title.lower(), events))
+
+
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'

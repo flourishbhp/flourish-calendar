@@ -11,6 +11,15 @@ class ParticipantNoteForm(forms.ModelForm):
 
     child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.title = self.initial.get('title', None)
+
+        if self.title and ('follow up' in self.title.lower() or 'comment' in self.title.lower()):
+            self.fields['title'].widget.attrs['readonly'] = True
+
     @property
     def subject_consent_model_cls(self):
         return django_apps.get_model(self.subject_consent_model)
