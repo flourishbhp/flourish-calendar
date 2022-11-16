@@ -80,7 +80,8 @@ class AppointmentHtmlBuilder:
         status = None
 
         try:
-            appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier)
+            appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier, 
+                                                 appt_date__date = self._appointment.appt_datetime.date())
         except AppointmentStatus.DoesNotExist:
             pass
         else:
