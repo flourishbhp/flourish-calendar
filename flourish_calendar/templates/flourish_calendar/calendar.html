@@ -31,5 +31,35 @@
 
 
     </div>
+    {% if search_results %}
+     <div>
+        <h5>Appointments</h5>
+        <table class="table">
+
+            <tr>
+                <th>Visit Code</th>
+                <th>Subject Identifier</th>
+                <th>Appointment Date</th>
+                <th>Navigate</th>
+
+
+            </tr>
+
+            {% for search_result in search_results %}
+
+                <tr>
+                    <td>{{ search_result.visit_code }}</td>
+                    <td>{{ search_result.subject_identifier }}</td>
+                    <td>{{ search_result.appt_datetime|date:'Y-m-d'}}</td>
+                    <td><a class="btn btn-primary" href="?month={{search_result.appt_datetime.year}}-{{search_result.appt_datetime.month}}">
+                        Navigate To Month
+                    </a></td>
+                </tr>
+            
+            {% endfor %}
+
+        </table>
+     </div>
+    {% endif %}
     {{ calendar }}
 {% endblock %}
