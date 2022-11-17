@@ -1,10 +1,20 @@
 
 import datetime
+from django.apps import apps as django_apps
+from edc_appointment.models import Appointment
 
 from ..models import AppointmentStatus
 
 
 class AppointmentHelper:
+    
+    child_appointment_model = 'flourish_child.appointment'
+    
+
+    @classmethod
+    @property
+    def child_appointment_cls(cls):
+        return django_apps.get_model(cls.child_appointment_model)
 
     @staticmethod
     def change_color(subject_identifier, visit_code, color, appt_date):
@@ -31,3 +41,33 @@ class AppointmentHelper:
             else:
                 appt.color = color
                 appt.save()
+                
+    @classmethod           
+    def all_search_appointments(cls, subject_identifier, type):
+        
+        results = []
+        
+        if subject_identifier:
+        
+            if type == 'caregiver':
+                caregiver_appointments = Appointment.objects.filter(
+                    subject_identifier__icontains=subject_identifier)
+                results.extend(caregiver_appointments)
+                
+            elif type == 'children':
+                children_appointments = cls.child_appointment_cls.objects.filter(
+                    subject_identifier__icontains=subject_identifier)
+                results.extend(children_appointments)
+                
+            else:
+                
+                caregiver_appointments = Appointment.objects.filter(
+                    subject_identifier__icontains=subject_identifier)
+                
+                children_appointments = cls.child_appointment_cls.objects.filter(
+                    subject_identifier__icontains=subject_identifier)
+
+                results.extend(caregiver_appointments)
+                results.extend(children_appointments)
+        
+        return results
