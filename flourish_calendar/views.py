@@ -68,6 +68,15 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         # Call the formatmonth method, which returns our calendar as a table
 
         html_cal = cal.formatmonth(withyear=True)
+        
+        
+        
+    
+        
+        
+        search_results = AppointmentHelper.all_search_appointments(subject_identifier=search_term, 
+                                                                  type=search_filter)
+        
 
 
         context.update(
@@ -76,6 +85,7 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
             calendar=mark_safe(html_cal),
             filter=search_filter,
             search_term=search_term,
+            search_results = search_results,
             new_reminder_url=self.new_reminder_wrapper.href,
             new_participant_note_url=self.new_participant_wrapper.href)
 
