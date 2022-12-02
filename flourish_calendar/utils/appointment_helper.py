@@ -54,7 +54,7 @@ class AppointmentHelper:
                 results.extend(caregiver_appointments)
                 
             elif type == 'children':
-                children_appointments = AppointmentHelper.child_appointment_cls.objects.filter(
+                children_appointments = AppointmentHelper.child_appointment_cls().objects.filter(
                     subject_identifier__icontains=subject_identifier)
                 results.extend(children_appointments)
                 
@@ -63,7 +63,7 @@ class AppointmentHelper:
                 caregiver_appointments = Appointment.objects.filter(
                     subject_identifier__icontains=subject_identifier)
                 
-                children_appointments = AppointmentHelper.child_appointment_cls.objects.filter(
+                children_appointments = AppointmentHelper.child_appointment_cls().objects.filter(
                     subject_identifier__icontains=subject_identifier)
 
                 results.extend(caregiver_appointments)
