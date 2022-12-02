@@ -88,11 +88,7 @@ class CustomCalendar(HTMLCalendar):
         q_objects = Q()
 
         if self.search_term:
-            q_objects = Q(subject_identifier__icontains=self.search_term) | \
-                        Q(visit_code__icontains=self.search_term) | \
-                        Q(appt_status__icontains=self.search_term) | \
-                        Q(timepoint_status__icontains=self.search_term) | \
-                        Q(appt_reason__icontains=self.search_term)
+            q_objects = Q(subject_identifier__icontains=self.search_term) 
 
         if self.filter == 'reminder':
             reminders = Reminder.objects.filter(
@@ -148,12 +144,15 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__month=self.month,)
 
             reminders = Reminder.objects.filter(
-                datetime__year=self.year, datetime__month=self.month
+                datetime__year=self.year, datetime__month=self.month,
+                title__icontains = self.search_term
             )
 
             participant_notes = ParticipantNote.objects.filter(
-                date__year=self.year, date__month=self.month
+                date__year=self.year, date__month=self.month,
+                title__icontains = self.search_term
             )
+            
             events.extend(list(reminders))
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
