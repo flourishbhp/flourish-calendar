@@ -145,12 +145,12 @@ class CustomCalendar(HTMLCalendar):
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month,
-                title__icontains = self.search_term
+                title__icontains = self.search_term or ''
             )
 
             participant_notes = ParticipantNote.objects.filter(
                 date__year=self.year, date__month=self.month,
-                title__icontains = self.search_term
+                title__icontains = self.search_term or ''
             )
             
             events.extend(list(reminders))
