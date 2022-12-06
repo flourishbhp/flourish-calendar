@@ -23,8 +23,13 @@ class ReminderAdmin(
                 'datetime',
                 'title',
                 'note',
+                'color',
             )}
          ), audit_fieldset_tuple)
+    
+    radio_fields = {
+        'color': admin.VERTICAL
+    }
 
     
     def redirect_url_on_delete(self, request, obj_display, obj_id):
