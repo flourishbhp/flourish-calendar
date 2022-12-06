@@ -13,12 +13,18 @@ class ReminderHtmlBuilder:
         return self._reminder.status.replace("_", " ").title()
     
     def _reminder_html(self):
-        view = "<div class='item'><li>"
+        view = None
+        
+        if self.status_color:
+            view = f"<div class='item {self.status_color}'><li>"
+        else:
+            view = f"<div class='item'><li>"
+            
 
         reminder_wrapper = ReminderModelWrapper(model_obj=self._reminder)
 
         view += f"""\
-            <a target="__blank" href="{reminder_wrapper.href}">
+            <a target="__blank" href="{reminder_wrapper.href}" class="{'colored' if self.status_color else None}">
                 <b>{self._reminder.title}</b>
             </a>
             """
