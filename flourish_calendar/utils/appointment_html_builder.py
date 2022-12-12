@@ -152,7 +152,6 @@ class AppointmentHtmlBuilder:
         return f'''<br> <a href='{self.participant_note_wrapper.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
 
     def _html(self, dashboard_type):
-        wrapped_locator_obj = self.wrapped_locator_obj(self.subject_identifier)
         icon = None
         if 'quart' in self._appointment.schedule_name:
             icon = '📞'
@@ -170,7 +169,7 @@ class AppointmentHtmlBuilder:
             'appointment_choices': self.appointment_choices,
             'date': self._appointment.appt_datetime.date().isoformat(),
             'is_not_sec': 'sec' not in self._appointment.schedule_name,
-            'view_locator_href': wrapped_locator_obj.href
+            'view_locator_href': self.wrapped_locator_obj.href
         }, request=self.request)
 
         return view
@@ -194,5 +193,4 @@ class AppointmentHtmlBuilder:
 
     @property
     def wrapped_locator_obj(self):
-        locator_object = self.locator_obj()
-        return CaregiverLocatorModelWrapper(locator_object)
+        return CaregiverLocatorModelWrapper(self.locator_obj)
