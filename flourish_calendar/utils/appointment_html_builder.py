@@ -182,15 +182,17 @@ class AppointmentHtmlBuilder:
         else:
             return self._html('subject_dashboard')
 
-    def locator_obj(self, subject_identifier):
+    @property
+    def locator_obj(self):
         try:
             locator_obj = self.caregiver_locator_cls.objects.get(
-                subject_identifier=subject_identifier)
+                subject_identifier=self.subject_identifier)
         except self.caregiver_locator_cls.DoesNotExist:
             return None
         else:
             return locator_obj
 
-    def wrapped_locator_obj(self, subject_identifier):
-        locator_object = self.locator_obj(subject_identifier)
+    @property
+    def wrapped_locator_obj(self):
+        locator_object = self.locator_obj()
         return CaregiverLocatorModelWrapper(locator_object)
