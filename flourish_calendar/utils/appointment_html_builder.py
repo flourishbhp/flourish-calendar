@@ -193,4 +193,4 @@ class AppointmentHtmlBuilder:
 
     @property
     def wrapped_locator_obj(self):
-        return CaregiverLocatorModelWrapper(self.locator_obj)
+        return CaregiverLocatorModelWrapper(self.locator_obj) if self.locator_obj else None
