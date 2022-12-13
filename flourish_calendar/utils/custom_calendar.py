@@ -19,7 +19,7 @@ class CustomCalendar(HTMLCalendar):
         self.year = year
         self.month = month
         self.filter = request.session.get('filter', None)
-        self.search_term = request.session.get('search_term', '')
+        self.search_term = request.session.get('search_term', None)
         self.request = request
         super(CustomCalendar, self).__init__()
 
@@ -88,7 +88,7 @@ class CustomCalendar(HTMLCalendar):
         q_objects = Q()
 
         if self.search_term:
-            q_objects = Q(subject_identifier__icontains=self.search_term) 
+            q_objects = Q(subject_identifier__icontains=self.search_term)
 
         if self.filter == 'reminder':
             reminders = Reminder.objects.filter(
@@ -145,22 +145,22 @@ class CustomCalendar(HTMLCalendar):
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month,
-                title__icontains = self.search_term or ''
+                title__icontains=self.search_term or ''
             )
 
             participant_notes = ParticipantNote.objects.filter(
                 date__year=self.year, date__month=self.month,
-                title__icontains = self.search_term or ''
+                title__icontains=self.search_term or ''
             )
-            
+
             events.extend(list(reminders))
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
 
+            # breakpoint()
 
         events = list(filter(lambda e: 'comment' not in e.title.lower(), events))
-
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'

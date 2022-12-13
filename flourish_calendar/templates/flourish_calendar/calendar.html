@@ -31,7 +31,7 @@
 
 
     </div>
-    {% if search_results %}
+    {% if appointment_search_results %}
      <div>
         <h5>Appointments</h5>
         <table class="table">
@@ -41,11 +41,9 @@
                 <th>Subject Identifier</th>
                 <th>Appointment Date</th>
                 <th>Navigate</th>
-
-
             </tr>
 
-            {% for search_result in search_results %}
+            {% for search_result in appointment_search_results %}
 
                 <tr>
                     <td>{{ search_result.visit_code }}</td>
@@ -54,6 +52,48 @@
                     <td><a class="btn btn-primary" href="?month={{search_result.appt_datetime.year}}-{{search_result.appt_datetime.month}}">
                         Navigate To Month
                     </a></td>
+                </tr>
+            
+            {% endfor %}
+
+        </table>
+     </div>
+    {% endif %}
+
+    {% if notes_search_results %}
+     <div>
+        <h5>Reminders & Notes</h5>
+        <table class="table">
+
+            <tr>
+                <th>Title</th>
+                <th>Subject Identifier</th>
+                <th>Date</th>
+                <th>Navigate</th>
+
+
+            </tr>
+
+            {% for search_result in notes_search_results %}
+
+                <tr>
+                    <td>{{ search_result.title }}</td>
+
+                    {% if search_result.subject_identifier %}
+                        <td>{{ search_result.subject_identifier }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+
+                    {% if search_result.date  %}
+                        <td>{{ search_result.date }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                    <td><a class="btn btn-primary" href="?month={{search_result.date.year}}-{{search_result.date.month}}">
+                        Navigate To Month
+                    </a></td>
+
                 </tr>
             
             {% endfor %}
