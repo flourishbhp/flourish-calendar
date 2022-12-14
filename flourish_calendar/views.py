@@ -58,9 +58,13 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
         if search_filter:
             self.request.session['filter'] = search_filter
+        elif search_filter == 'all':
+            del self.request.session['filter']
 
-        if search_term:
-            self.request.session['search_term'] = search_term
+        if search_term.strip():
+            self.request.session['search_term'] = search_term.strip()
+        else:
+            del self.request.session['search_term']
 
         # Instantiate our calendar class with today's year and date
         cal = CustomCalendar(d.year, d.month, self.request)
@@ -68,16 +72,11 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         # Call the formatmonth method, which returns our calendar as a table
 
         html_cal = cal.formatmonth(withyear=True)
-        
-        
-        
-    
-        
-        
-        search_results = AppointmentHelper.all_search_appointments(subject_identifier=search_term, 
-                                                                  type=search_filter)
-        
 
+        appointment_search_results = AppointmentHelper.all_search_appointments(subject_identifier=search_term,
+                                                                               type=search_filter)
+
+        notes_search_results = AppointmentHelper.all_notes(search_term=search_term)
 
         context.update(
             prev_month=DateHelper.prev_month(d),
@@ -85,7 +84,8 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
             calendar=mark_safe(html_cal),
             filter=search_filter,
             search_term=search_term,
-            search_results = search_results,
+            appointment_search_results=appointment_search_results,
+            notes_search_results=notes_search_results,
             new_reminder_url=self.new_reminder_wrapper.href,
             new_participant_note_url=self.new_participant_wrapper.href)
 
