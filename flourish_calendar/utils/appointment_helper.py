@@ -3,7 +3,7 @@ import datetime
 from django.apps import apps as django_apps
 from edc_appointment.models import Appointment
 
-from ..models import AppointmentStatus
+from ..models import AppointmentStatus, ParticipantNote, Reminder
 
 
 class AppointmentHelper:
@@ -58,7 +58,7 @@ class AppointmentHelper:
                     subject_identifier__icontains=subject_identifier)
                 results.extend(children_appointments)
                 
-            else:
+            elif type=='all':
                 
                 caregiver_appointments = Appointment.objects.filter(
                     subject_identifier__icontains=subject_identifier)
@@ -70,3 +70,21 @@ class AppointmentHelper:
                 results.extend(children_appointments)
         
         return results
+    
+    @classmethod
+    def all_notes(cls, search_term):
+        
+        results = []
+        
+        if search_term:
+            
+            participant_notes = ParticipantNote.objects.filter(title__icontains = search_term)
+            reminders = Reminder.objects.filter(title__icontains = search_term)
+            
+            
+            
+            results.extend(participant_notes)
+            results.extend(reminders)
+        
+        return results
+

@@ -1,8 +1,5 @@
-import imp
-
 from django.apps import apps as django_apps
 from django.template.loader import render_to_string
-
 from edc_appointment.choices import (
     NEW_APPT,
     IN_PROGRESS_APPT,
@@ -12,13 +9,16 @@ from edc_appointment.choices import (
 )
 from edc_appointment.models import Appointment
 
+from flourish_dashboard.model_wrappers.caregiver_locator_model_wrapper import \
+    CaregiverLocatorModelWrapper
 from ..choices import APPT_COLOR
-from ..model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
-from ..models import Reminder, AppointmentStatus, ParticipantNote
+from ..model_wrappers import ParticipantNoteModelWrapper
+from ..models import AppointmentStatus, ParticipantNote
 
 
 class AppointmentHtmlBuilder:
     child_appointment_model = 'flourish_child.appointment'
+    caregiver_locator_model = 'flourish_caregiver.caregiverlocator'
 
     def __init__(self, appointment: Appointment, request) -> None:
         self._appointment = appointment
@@ -28,6 +28,10 @@ class AppointmentHtmlBuilder:
     @property
     def children_appointment_cls(self):
         return django_apps.get_model('flourish_child.appointment')
+
+    @property
+    def caregiver_locator_cls(self):
+        return django_apps.get_model(self.caregiver_locator_model)
 
     @property
     def model_obj(self):
@@ -80,8 +84,9 @@ class AppointmentHtmlBuilder:
         status = None
 
         try:
-            appt = AppointmentStatus.objects.get(subject_identifier=self.subject_identifier, 
-                                                 appt_date__date = self._appointment.appt_datetime.date())
+            appt = AppointmentStatus.objects.get(
+                subject_identifier=self.subject_identifier,
+                appt_date__date=self._appointment.appt_datetime.date())
         except AppointmentStatus.DoesNotExist:
             pass
         else:
@@ -147,6 +152,9 @@ class AppointmentHtmlBuilder:
         return f'''<br> <a href='{self.participant_note_wrapper.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
 
     def _html(self, dashboard_type):
+        view_locator_href = None
+        if self.wrapped_locator_obj:
+            view_locator_href = self.wrapped_locator_obj.href
         icon = None
         if 'quart' in self._appointment.schedule_name:
             icon = '📞'
@@ -163,7 +171,8 @@ class AppointmentHtmlBuilder:
             'icon': icon,
             'appointment_choices': self.appointment_choices,
             'date': self._appointment.appt_datetime.date().isoformat(),
-            'is_not_sec': 'sec' not in self._appointment.schedule_name
+            'is_not_sec': 'sec' not in self._appointment.schedule_name,
+            'view_locator_href': view_locator_href
         }, request=self.request)
 
         return view
@@ -174,3 +183,17 @@ class AppointmentHtmlBuilder:
             return self._html('child_dashboard')
         else:
             return self._html('subject_dashboard')
+
+    @property
+    def locator_obj(self):
+        try:
+            locator_obj = self.caregiver_locator_cls.objects.get(
+                subject_identifier=self.subject_identifier)
+        except self.caregiver_locator_cls.DoesNotExist:
+            return None
+        else:
+            return locator_obj
+
+    @property
+    def wrapped_locator_obj(self):
+        return CaregiverLocatorModelWrapper(self.locator_obj) if self.locator_obj else None
