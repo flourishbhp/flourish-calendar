@@ -61,10 +61,12 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
         elif search_filter == 'all':
             del self.request.session['filter']
 
-        if search_term.strip():
+        if search_filter:
+            search_term = search_term.strip()
             self.request.session['search_term'] = search_term.strip()
         else:
-            del self.request.session['search_term']
+            if self.request.session.get('search_term', None):
+                del self.request.session['search_term']
 
         # Instantiate our calendar class with today's year and date
         cal = CustomCalendar(d.year, d.month, self.request)
