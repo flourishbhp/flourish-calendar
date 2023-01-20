@@ -1,6 +1,8 @@
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
+
 from ..choices import APPT_COLOR
+
 
 class AppointmentStatus(BaseUuidModel):
     '''
@@ -11,3 +13,7 @@ class AppointmentStatus(BaseUuidModel):
     visit_code = models.CharField(max_length=10)
     color = models.CharField(max_length=10, choices=APPT_COLOR)
     appt_date = models.DateTimeField()
+
+
+    class Meta:
+        unique_together = ('subject_identifier', 'visit_code', 'color')
