@@ -16,4 +16,4 @@ class AppointmentStatus(BaseUuidModel):
 
 
     class Meta:
-        unique_together = ('subject_identifier', 'visit_code', 'color')
+        unique_together = ('subject_identifier', 'visit_code', 'color', 'appt_date')
