@@ -50,10 +50,14 @@ class ParticipantNoteForm(forms.ModelForm):
 
         child_consent = self.child_consent_model_cls.objects.filter(
             subject_identifier=subject_identifier)
+        
+        subject_consent = self.subject_consent_model_cls.objects.filter(
+            subject_identifier = subject_identifier
+        )
 
-        if not child_consent:
-
-            raise ValidationError({'subject_identifier': 'Subject identifier for child does '
+        if not (child_consent or subject_consent):
+            
+            raise ValidationError({'subject_identifier': 'Subject identifier for child/caregiver does '
                                    'not exist'})
 
         return cleaned_data
