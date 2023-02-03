@@ -108,7 +108,9 @@ class CustomCalendar(HTMLCalendar):
             child_appointments = self.children_appointment_cls.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month)
+                appt_datetime__month=self.month).exclude(
+                    schedule_name__icontains='quart'
+                )
             events = list(child_appointments)
 
         elif self.filter == 'reminder':
@@ -141,7 +143,9 @@ class CustomCalendar(HTMLCalendar):
             child_appointments = self.children_appointment_cls.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month,)
+                appt_datetime__month=self.month,).exclude(
+                    schedule_name__icontains='quart'
+                )
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month,
@@ -157,8 +161,6 @@ class CustomCalendar(HTMLCalendar):
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
-
-            # breakpoint()
 
         events = list(filter(lambda e: 'comment' not in e.title.lower(), events))
 
