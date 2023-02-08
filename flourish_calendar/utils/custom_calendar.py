@@ -133,7 +133,15 @@ class CustomCalendar(HTMLCalendar):
             )
 
             events = list(participant_notes)
-
+            
+        elif self.filter in ['a', 'b', 'c']:
+            caregiver_appointments = Appointment.objects.filter(
+                ~Q(user_modified='flourish') & q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                schedule_name__istartswith=self.filter)
+            events = list(caregiver_appointments)
+            
         else:
             caregiver_appointments = Appointment.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
