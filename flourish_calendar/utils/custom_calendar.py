@@ -140,30 +140,14 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter)
             events = list(caregiver_appointments)
-
-        elif self.filter in ['a_antenatal', 'a_birth', 
-                             'a_enrol', 'b_enrol', 'c_enrol', 
-                             'a_sec_quart', 'b_sec_quart', 'c_sec_quart',
-                             'a_quart', 'b_quart', 'c_quart', 
-                             'a_fu', 'b_fu', 'c_fu']:
-            
-            
-            caregiver_appointments = Appointment.objects.filter(
-                q_objects,
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month,
-                schedule_name__istartswith=self.filter)
-            events = list(caregiver_appointments)
             
         elif self.filter in ['a_sec', 'b_sec', 'c_sec']:
             
-            caregiver_appointments = Appointment.objects.filter(
-                q_objects,
+            caregiver_appointments = Appointment.objects.filter(q_objects,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,
-                schedule_name__istartswith=self.filter).exclude(
-                    schedule_name__in = ['a_sec_quart', 'b_sec_quart', 'c_sec_quart']
-                )
+                schedule_name__istartswith=self.filter)
+            
             events = list(caregiver_appointments)
             
         else:
