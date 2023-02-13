@@ -110,7 +110,7 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month).exclude(
                     schedule_name__icontains='quart'
-                )
+            )
             events = list(child_appointments)
 
         elif self.filter == 'reminder':
@@ -133,13 +133,28 @@ class CustomCalendar(HTMLCalendar):
             )
 
             events = list(participant_notes)
-            
+
         elif self.filter in ['a', 'b', 'c']:
-            caregiver_appointments = Appointment.objects.filter(
-                ~Q(user_modified='flourish') & q_objects,
+            
+            secondary_schedule_names = Appointment.objects.filter(schedule_name__icontains='_sec')\
+                .values_list('schedule_name', flat=True)\
+                .distinct()
+            
+            caregiver_appointments = Appointment.objects.filter(q_objects,
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,
+                schedule_name__istartswith=self.filter).exclude(
+                    schedule_name__in=secondary_schedule_names
+                )
+            events = list(caregiver_appointments)
+            
+        elif self.filter in ['a_sec', 'b_sec', 'c_sec']:
+            
+            caregiver_appointments = Appointment.objects.filter(q_objects,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter)
+            
             events = list(caregiver_appointments)
             
         else:
@@ -153,7 +168,7 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,).exclude(
                     schedule_name__icontains='quart'
-                )
+            )
 
             reminders = Reminder.objects.filter(
                 datetime__year=self.year, datetime__month=self.month,
