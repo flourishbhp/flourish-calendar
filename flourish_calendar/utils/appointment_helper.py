@@ -1,6 +1,7 @@
 import datetime
 
 from django.apps import apps as django_apps
+from django.db.models import Q
 from edc_appointment.models import Appointment
 
 from ..models import AppointmentStatus, ParticipantNote, Reminder
@@ -80,7 +81,7 @@ class AppointmentHelper:
 
         if search_term:
             participant_notes = ParticipantNote.objects.filter(
-                title__icontains=search_term)
+                Q(title__icontains=search_term) | Q(subject_identifier__icontains=search_term))
             reminders = Reminder.objects.filter(title__icontains=search_term)
 
             results.extend(participant_notes)

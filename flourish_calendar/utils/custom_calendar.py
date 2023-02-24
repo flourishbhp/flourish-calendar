@@ -126,37 +126,36 @@ class CustomCalendar(HTMLCalendar):
             events = list(participant_notes)
 
         elif self.filter == 'follow_up':
-
             participant_notes = ParticipantNote.objects.filter(
-                title__icontains='Follow Up',
+                q_objects,
+                title__icontains='Follow Up Schedule',
                 date__year=self.year, date__month=self.month
             )
 
             events = list(participant_notes)
 
         elif self.filter in ['a', 'b', 'c']:
-            
             secondary_schedule_names = Appointment.objects.filter(schedule_name__icontains='_sec')\
                 .values_list('schedule_name', flat=True)\
                 .distinct()
-            
-            caregiver_appointments = Appointment.objects.filter(q_objects,
+
+            caregiver_appointments = Appointment.objects.filter(
+                q_objects,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter).exclude(
                     schedule_name__in=secondary_schedule_names
                 )
             events = list(caregiver_appointments)
-            
+
         elif self.filter in ['a_sec', 'b_sec', 'c_sec']:
-            
-            caregiver_appointments = Appointment.objects.filter(q_objects,
+            caregiver_appointments = Appointment.objects.filter(
+                q_objects,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter)
-            
+
             events = list(caregiver_appointments)
-            
         else:
             caregiver_appointments = Appointment.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
@@ -176,8 +175,8 @@ class CustomCalendar(HTMLCalendar):
             )
 
             participant_notes = ParticipantNote.objects.filter(
-                date__year=self.year, date__month=self.month,
-                title__icontains=self.search_term or ''
+                q_objects | Q(title__icontains=self.search_term or ''),
+                date__year=self.year, date__month=self.month
             )
 
             events.extend(list(reminders))
