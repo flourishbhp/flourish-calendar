@@ -84,10 +84,10 @@ class AppointmentHtmlBuilder:
         status = None
 
         try:
-            appt = AppointmentStatus.objects.filter(
+            appt = AppointmentStatus.objects.get(
                 subject_identifier=self.subject_identifier,
-                appt_date__date=self._appointment.appt_datetime.date())\
-                    .latest('appt_date')
+                appt_date=self._appointment.appt_datetime.date(),
+                visit_code = self._appointment.visit_code,)
                     
         except AppointmentStatus.DoesNotExist:
             pass
