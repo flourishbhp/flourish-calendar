@@ -1,3 +1,5 @@
+import datetime
+from dateutil.relativedelta import relativedelta
 from django import forms
 from django.apps import apps as django_apps
 from django.forms import ValidationError
@@ -11,7 +13,8 @@ class ParticipantNoteForm(forms.ModelForm):
 
     child_consent_model = 'flourish_caregiver.caregiverchildconsent'
 
-    
+    schedule_history_model = 'edc_visit_schedule.subjectschedulehistory'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -27,6 +30,10 @@ class ParticipantNoteForm(forms.ModelForm):
     @property
     def child_consent_model_cls(self):
         return django_apps.get_model(self.child_consent_model)
+
+    @property
+    def schedule_history_cls(self):
+        return django_apps.get_model(self.schedule_history_model)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,18 +54,32 @@ class ParticipantNoteForm(forms.ModelForm):
         cleaned_data = super().clean()
 
         subject_identifier = cleaned_data.get('subject_identifier')
+        date = cleaned_data.get('date')
 
         child_consent = self.child_consent_model_cls.objects.filter(
             subject_identifier=subject_identifier)
-        
+
         subject_consent = self.subject_consent_model_cls.objects.filter(
-            subject_identifier = subject_identifier
+            subject_identifier=subject_identifier
         )
 
         if not (child_consent or subject_consent):
-            
-            raise ValidationError({'subject_identifier': 'Subject identifier for child/caregiver does '
-                                   'not exist'})
+            raise ValidationError(
+                {'subject_identifier':
+                 'Subject identifier for child/caregiver does not exist'})
+
+        onschedules = self.schedule_history_cls.objects.onschedules(
+            subject_identifier=subject_identifier)
+        if onschedules and date:
+            start_dt = datetime.date(2023, 1, 1)
+            enrolment_dt = onschedules[0].onschedule_datetime
+            followup_dt = enrolment_dt + relativedelta(years=1)
+            lower_bound = (followup_dt - relativedelta(days=45)).date()
+            upper_bound = (followup_dt + relativedelta(days=45)).date()
+            if (enrolment_dt.date() >= start_dt and (
+                    date < lower_bound or date > upper_bound)):
+                raise ValidationError(
+                    {'date': 'Date is outside the window period of booking'})
 
         return cleaned_data
 
