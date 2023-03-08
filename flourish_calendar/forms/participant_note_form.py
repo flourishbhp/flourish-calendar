@@ -68,25 +68,26 @@ class ParticipantNoteForm(forms.ModelForm):
                 {'subject_identifier':
                  'Subject identifier for child/caregiver does not exist'})
 
-        onschedules = self.schedule_history_cls.objects.onschedules(
-            subject_identifier=subject_identifier)
-        if onschedules and date:
-            start_dt = datetime.date(2023, 1, 1)
-            enrolment_dt = onschedules[0].onschedule_datetime
-            followup_dt = enrolment_dt + relativedelta(years=1)
-            lower_bound = (followup_dt - relativedelta(days=45)).date()
-            upper_bound = (followup_dt + relativedelta(days=45)).date()
-            if (enrolment_dt.date() >= start_dt and (
-                    date < lower_bound or date > upper_bound)):
-                raise ValidationError(
-                    {'date': 'Date is outside the window period of booking'})
+        if self.cleaned_data.get('title', '') == 'Follow Up Schedule':
+            onschedules = self.schedule_history_cls.objects.onschedules(
+                subject_identifier=subject_identifier)
+            if onschedules and date:
+                start_dt = datetime.date(2023, 1, 1)
+                enrolment_dt = onschedules[0].onschedule_datetime
+                followup_dt = enrolment_dt + relativedelta(years=1)
+                lower_bound = (followup_dt - relativedelta(days=45)).date()
+                upper_bound = (followup_dt + relativedelta(days=45)).date()
+                if (enrolment_dt.date() >= start_dt and (
+                        date < lower_bound or date > upper_bound)):
+                    raise ValidationError(
+                        {'date': 'Date is outside the window period of booking'})
 
         return cleaned_data
 
     title = forms.CharField(
         label='Title',
         widget=forms.TextInput(attrs={'readonly': 'readonly'}),
-        empty_value='Follow Up Schedudle')
+        empty_value='Follow Up Schedule')
 
     class Meta:
         model = ParticipantNote
