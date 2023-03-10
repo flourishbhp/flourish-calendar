@@ -6,9 +6,9 @@ NOTE_TYPE = (
 
 
 APPT_COLOR = (
-    ('done', 'Done'), # green
-    ('cancelled', 'Cancelled'), # red
-    ('recall', 'Recall'), # yellow
+    ('done', 'Done'),  # green
+    ('cancelled', 'Cancelled'),  # red
+    ('recall', 'Recall'),  # yellow
 )
 
 REMINDER_STATUS = (
@@ -20,5 +20,10 @@ COLORS = (
     ('green', 'Green'),
     ('red', 'Red'),
     ('grey', 'Grey'),
-    ('yellow', 'Yellow')    
+    ('yellow', 'Yellow'),
+    ('purple', 'Purple'),
+    ('pink', 'Pink'),
+    ('blue', 'Blue'),
+    ('teal', 'Teal'),
+    ('black', 'Black')
 )
