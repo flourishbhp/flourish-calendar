@@ -20,5 +20,10 @@ COLORS = (
     ('green', 'Green'),
     ('red', 'Red'),
     ('grey', 'Grey'),
-    ('yellow', 'Yellow')    
+    ('yellow', 'Yellow'),
+    ('purple', 'Purple'),
+    ('pink', 'Pink'),
+    ('blue', 'Blue'),
+    ('teal', 'Teal'),
+    ('black', 'Black')    
 )
