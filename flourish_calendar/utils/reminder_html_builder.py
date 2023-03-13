@@ -24,7 +24,7 @@ class ReminderHtmlBuilder:
         reminder_wrapper = ReminderModelWrapper(model_obj=self._reminder)
 
         view += f"""\
-            <a target="__blank" href="{reminder_wrapper.href}" class="{'colored' if self.status_color else None}">
+            <a target="__blank" href="{reminder_wrapper.href}" class="{f'colored {self.status_color}' if self.status_color else None}">
                 <b>{self._reminder.title}</b>
             </a>
             """
@@ -37,7 +37,6 @@ class ReminderHtmlBuilder:
     @property
     def status_color(self):
         
-        # ('green', 'red', 'grey', 'yellow')
         status = None
         
         if self._reminder.color == 'green':
@@ -48,6 +47,10 @@ class ReminderHtmlBuilder:
             status = 'label-default'
         elif self._reminder.color == 'yellow':
             status =  'label-warning'
+            
+        elif self._reminder.color in \
+            ('purple', 'blue', 'pink', 'teal', 'black'):
+            status = self._reminder.color
             
         return status
     

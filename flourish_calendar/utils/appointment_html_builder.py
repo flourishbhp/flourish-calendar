@@ -86,7 +86,7 @@ class AppointmentHtmlBuilder:
         try:
             appt = AppointmentStatus.objects.get(
                 subject_identifier=self.subject_identifier,
-                appt_date=self._appointment.appt_datetime.date(),
+                appt_date__date=self._appointment.appt_datetime.date(),
                 visit_code = self._appointment.visit_code,)
                     
         except AppointmentStatus.DoesNotExist:
