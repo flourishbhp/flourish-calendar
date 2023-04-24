@@ -1,3 +1,5 @@
+from .constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS
+
 NOTE_TYPE = (
     ('general_note', 'General Note'),
     ('reminder_note', 'Reminder Note'),
@@ -26,4 +28,10 @@ COLORS = (
     ('blue', 'Blue'),
     ('teal', 'Teal'),
     ('black', 'Black')
+)
+
+REPEAT = (
+    (DAILY, 'Daily'),
+    (WEEKLY, 'Weekly'),
+    (MONTHLY, 'Monthly'),
 )

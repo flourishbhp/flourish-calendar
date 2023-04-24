@@ -23,12 +23,14 @@ class ReminderAdmin(
                 'datetime',
                 'title',
                 'note',
+                'repeat',
                 'color',
             )}
          ), audit_fieldset_tuple)
     
     radio_fields = {
-        'color': admin.VERTICAL
+        'color': admin.VERTICAL,
+        'repeat': admin.HORIZONTAL
     }
 
     
