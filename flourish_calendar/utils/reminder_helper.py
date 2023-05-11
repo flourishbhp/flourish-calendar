@@ -30,14 +30,30 @@ class ReminderDuplicator:
         reminders = []
 
         if self.reminder.repeat == DAILY:
+
             dates = self._get_working_days(
                 reminder_date.year, reminder_date.month)
+
         elif self.reminder.repeat == WEEKLY:
-            pass
+
+            dates = self._get_weekdays(
+                reminder_date.year,
+                reminder_date.month,
+                reminder_date.weekday()
+            )
         elif self.reminder.repeat == MONTHLY:
-            pass
+            self._get_dates_after_n_days(
+                reminder_date.year,
+                reminder_date,
+                30
+            )
         elif self.reminder.repeat == YEARLY:
-            pass
+            self._get_dates_after_n_days(
+                reminder_date.year,
+                reminder_date,
+                365,
+                datetime.date(2025, 6, 30)
+            )
         else:
             pass
 
@@ -68,3 +84,24 @@ class ReminderDuplicator:
 
         # return the list of working days
         return working_days
+
+    def _get_weekdays(self, year, month, day_of_week):
+        weekdays = []
+        cal = calendar.Calendar()
+        for day in cal.itermonthdates(year, month):
+            if day.weekday() == day_of_week:
+                weekdays.append(day)
+        return weekdays
+
+    def _get_dates_after_n_days(self, year, start_date, n, end_date=None):
+        start_date = datetime.date(year, start_date.month, start_date.day)
+        end_date = end_date or datetime.date(year + 1, 1, 1)
+        delta = datetime.timedelta(days=n)
+
+        dates = []
+        date = start_date
+        while date < end_date:
+            dates.append(date)
+            date += delta
+
+        return dates

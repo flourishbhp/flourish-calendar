@@ -1,4 +1,4 @@
-from .constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS
+from .constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS, YEARLY
 
 NOTE_TYPE = (
     ('general_note', 'General Note'),
@@ -34,4 +34,5 @@ REPEAT = (
     (DAILY, 'Daily'),
     (WEEKLY, 'Weekly'),
     (MONTHLY, 'Monthly'),
+    (YEARLY, 'Yearly')
 )
