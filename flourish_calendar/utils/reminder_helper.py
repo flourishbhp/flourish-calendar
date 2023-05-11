@@ -1,103 +1,70 @@
 
 import calendar
-from datetime import date, timedelta, datetime
+import datetime
 from django.forms import model_to_dict
-from ..constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS
+from django.apps import apps as django_apps
+from ..constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS, YEARLY
 from ..models import Reminder
 
-class ReminderHelper:
-    
-    
-    
-    @staticmethod
-    def repeat(reminder: Reminder):
-        
-        repeat_types = [DAILY, WEEKLY, MONTHLY, WEEKDAYS]
-        
-        type = reminder.repeat
-        
-        if type not in repeat_types:
-            raise Exception('Repeat type not valid')
-        
-        days = []
-        
-        if reminder:
-            if type == DAILY:
-                days =  ReminderHelper._get_workdays_in_month(reminder.date.year, 
-                                                   reminder.date.month)
-            elif type == WEEKLY:
-                days = ReminderHelper._get_week_day_in_a_month(reminder.date.year,
-                                              reminder.date.month,
-                                              reminder.date.strftime('%A'))
-            elif type == MONTHLY:
-                days = ReminderHelper._get_day_per_month(
-                    reminder.date.year,
-                    reminder.date.month,
-                )
-                
-        days = filter(lambda element: element > reminder.date, days)
 
-                
-        for day in days:
-            
-            reminders_exist =Reminder.objects.filter(
-                    datetime__date = day,
-                    title = reminder.title,
-                    note = reminder.note
-                )
-            
-            if not reminders_exist.exists():
-                
-                reminder_dict = model_to_dict(reminder)
-                reminder_dict['datetime'] = datetime.fromisoformat(day.isoformat())
-                
+class ReminderDuplicator:
 
-                Reminder.objects.create(**reminder_dict)
-                
-                # reminder.datetime = day
-                # reminder_dict = model_to_dict(reminder)            
-                # Reminder.objects.create(
-                #     **reminder_dict)
+    holiday_model = 'edc_facility.holiday'
 
-        
-    def _get_workdays_in_month(year, month):
-        # get the first day of the month
-        date = datetime.date(year, month, 1)
-    
-        # iterate over all days in the month
+    def __init__(self, reminder):
+        self.reminder = reminder
+
+    @property
+    def holiday_cls(self):
+        return django_apps.get_model(self.holiday_model)
+
+    def is_holiday(self, date):
+        return self.holiday_cls.objects.filter(
+            local_date=date
+        ).exists()
+
+    def repeat(self):
+
+        reminder_date = self.reminder.date
         dates = []
-        while date.month == month:
-            # check if the current day is a weekday (0 = Monday, 6 = Sunday)
+        reminders = []
+
+        if self.reminder.repeat == DAILY:
+            dates = self._get_working_days(
+                reminder_date.year, reminder_date.month)
+        elif self.reminder.repeat == WEEKLY:
+            pass
+        elif self.reminder.repeat == MONTHLY:
+            pass
+        elif self.reminder.repeat == YEARLY:
+            pass
+        else:
+            pass
+
+        for date in dates:
+
+            if date <= self.reminder.date or self.is_holiday(date):
+                continue
+
+            reminder_dict = model_to_dict(self.reminder)
+            reminder_dict['datetime'] = datetime.datetime.combine(
+                date, self.reminder.datetime.time())
+
+            reminders.append(Reminder(**reminder_dict))
+
+        Reminder.objects.bulk_create(reminders)
+
+    def _get_working_days(self, year, month):
+        # get total number of days in the month
+        num_days = calendar.monthrange(year, month)[1]
+
+        # loop through all days in the month
+        working_days = []
+        for day in range(1, num_days+1):
+            date = datetime.date(year, month, day)
+            # check if the day is a weekday (0 = Monday, 6 = Sunday)
             if date.weekday() < 5:
-                dates.append(date)
-            date += datetime.timedelta(days=1)
-            
-        return dates
-    
-    
-    def _get_week_day_in_a_month( year, month, weekday):
-        # get the first day of the month
-        date = datetime.date(year, month, 1)
+                working_days.append(date)
 
-        # find the first occurrence of the weekday in the month
-        while date.weekday() != weekday:
-            date += datetime.timedelta(days=1)
-
-        # generate all the dates with the same weekday in the month
-        dates = []
-        while date.month == month:
-            dates.append(date)
-        date += datetime.timedelta(days=7)
-        return dates
-    
-    def _get_day_per_month( year, day):
-        months = []
-        for month in range(1, 13):
-            month_start = date(year, month, 1)
-            month_end = date(year, month, calendar.monthrange(year, month)[1])
-            for i in range((month_end - month_start).days + 1):
-                curr_day = month_start + timedelta(days=i)
-                if curr_day.strftime('%A') == day:
-                    months.append(curr_day.strftime("%B %Y"))
-                    break
-        return months
+        # return the list of working days
+        return working_days

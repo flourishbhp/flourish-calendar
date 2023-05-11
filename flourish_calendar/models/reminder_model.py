@@ -21,11 +21,16 @@ class Reminder(BaseUuidModel):
     )
 
     @property
+    def is_repeated(self):
+        return Reminder.objects.filter(
+            title=self.title,
+            note=self.note,
+            repeat=self.repeat).count() > 1
+
+    @property
     def date(self):
         return self.datetime.date()
 
     class Meta(BaseUuidModel.Meta):
         app_label = 'flourish_calendar'
         verbose_name = 'Note'
-
-
