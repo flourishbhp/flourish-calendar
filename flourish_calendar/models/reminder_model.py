@@ -1,9 +1,6 @@
-from email.policy import default
-from tabnanny import verbose
 from edc_base.model_mixins import BaseUuidModel
 from django.db import models
-from django.utils import timezone
-from ..choices import COLORS
+from ..choices import COLORS, REPEAT
 
 class Reminder(BaseUuidModel):
     title = models.CharField(max_length=70)
@@ -14,6 +11,21 @@ class Reminder(BaseUuidModel):
                              blank=True,
                              null=True,
                              choices=COLORS)
+
+    repeat = models.CharField(
+        default=None,
+        null=True,
+        blank=True,
+        choices=REPEAT,
+        max_length=10
+    )
+
+    @property
+    def is_repeated(self):
+        return Reminder.objects.filter(
+            title=self.title,
+            note=self.note,
+            repeat=self.repeat).count() > 1
 
     @property
     def date(self):
