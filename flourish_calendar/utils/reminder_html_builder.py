@@ -1,8 +1,8 @@
-from tkinter import SEL_LAST
 from typing import Any
 from ..models import Reminder, ParticipantNote
 from ..model_wrappers import ReminderModelWrapper, ParticipantNoteModelWrapper
 from django.template.loader import render_to_string
+
 
 class ReminderHtmlBuilder:
     def __init__(self, reminder: Any) -> None:
@@ -19,8 +19,6 @@ class ReminderHtmlBuilder:
             view = f"<div class='item {self.status_color}'><li>"
         else:
             view = f"<div class='item'><li>"
-            
-
         reminder_wrapper = ReminderModelWrapper(model_obj=self._reminder)
 
         view += f"""\
@@ -28,8 +26,6 @@ class ReminderHtmlBuilder:
                 <b>{self._reminder.title}</b>
             </a>
             """
-
-
         view += "</li></div>"
 
         return view
@@ -61,22 +57,18 @@ class ReminderHtmlBuilder:
         else:
             return 'child_dashboard'
 
-
     @property
     def new_participant_note_wrapper(self):
         participent_note = ParticipantNote()
         return ParticipantNoteModelWrapper(model_obj=participent_note)
     
     def _participant_notes_html(self):
-        view = "<div class='item participant_notes'><li>"
-
         participant_note_wrapper = ParticipantNoteModelWrapper(model_obj=self._reminder)
         icon = '📝'
         
         if "Follow" in self._reminder.title:
             icon = '➡️'
 
-        
         return render_to_string('flourish_calendar/follow_appointment_template.html', {
             # 'status_color': self.status_color,
             # 'dashboard_type': dashboard_type,
@@ -88,12 +80,11 @@ class ReminderHtmlBuilder:
             'color': self._reminder.color,
             'date': self._reminder.date,
             'status_color' : self.status_color,
-            'dashboard_type': self._dashboard_type
-            
+            'dashboard_type': self._dashboard_type,
+            'cohort': getattr(participant_note_wrapper, 'cohort', None)   
         })
 
     def view_build(self):
-
         if type(self._reminder) is Reminder:
             return self._reminder_html()
         elif type(self._reminder) is ParticipantNote:
