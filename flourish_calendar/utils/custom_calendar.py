@@ -63,7 +63,7 @@ class CustomCalendar(HTMLCalendar):
                 d += ReminderHtmlBuilder(event).view_build()
                 participant_note_counter += 1
 
-        if day and month != 0:
+        if day and month:
         
             today_day = datetime.today().day
             if self.is_holiday(date(datetime.today().year,month,day)):
