@@ -70,14 +70,15 @@ class CustomCalendar(HTMLCalendar):
 
                return f'''\
                     <td>
-                        <span class='date holiday {"today" if day == today_day else ""}'>{day}</span>
+                        <span class='date {"today" if day == today_day else ""}'>{day}</span>
+                        <span class='holiday-banner'>Public Holiday</span>
                         <ul style="height: 200px; overflow: scroll;"> {d} </ul>
                         <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
                     </td>
                     '''    
             return f'''\
                     <td>
-                        <span class='date {"today" if day == today_day and self.is_holiday(date(datetime.today().year,datetime.today().month,day)) else ""}'>{day}</span>
+                        <span class='date {"today" if day == today_day else ""}'>{day}</span>
                         <ul style="height: 200px; overflow: scroll;"> {d} </ul>
                         <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
                     </td>
