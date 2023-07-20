@@ -11,6 +11,8 @@ from edc_appointment.models import Appointment
 from ..models import ParticipantNote, Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
+from edc_facility.models import Holiday
+from datetime import date
 
 
 class CustomCalendar(HTMLCalendar):
@@ -29,7 +31,7 @@ class CustomCalendar(HTMLCalendar):
 
     # formats a day as a td
     # filter events by day
-    def formatday(self, day, events):
+    def formatday(self, day, events,month):
 
         events_per_day = []
         for event in events:
@@ -61,22 +63,33 @@ class CustomCalendar(HTMLCalendar):
                 d += ReminderHtmlBuilder(event).view_build()
                 participant_note_counter += 1
 
-        if day != 0:
+        if day and month:
+        
             today_day = datetime.today().day
+            if self.is_holiday(date(datetime.today().year,month,day)):
+
+               return f'''\
+                    <td>
+                        <span class='date {"today" if day == today_day else ""}'>{day}</span>
+                        <span class='holiday-banner'>Public Holiday</span>
+                        <ul style="height: 200px; overflow: scroll;"> {d} </ul>
+                        <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
+                    </td>
+                    '''    
             return f'''\
-                <td>
-                    <span class='date {"today" if day == today_day else ""}'>{day}</span>
-                    <ul style="height: 200px; overflow: scroll;"> {d} </ul>
-                    <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
-                </td>
-                '''
+                    <td>
+                        <span class='date {"today" if day == today_day else ""}'>{day}</span>
+                        <ul style="height: 200px; overflow: scroll;"> {d} </ul>
+                        <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
+                    </td>
+                    '''
         return '<td></td>'
 
     # formats a week as a tr
-    def formatweek(self, theweek, events):
+    def formatweek(self, theweek, events,month):
         week = ''
         for d, weekday in theweek:
-            week += self.formatday(d, events)
+            week += self.formatday(d, events,month)
         return f'<tr> {week} </tr>'
 
     # formats a month as a table
@@ -191,5 +204,12 @@ class CustomCalendar(HTMLCalendar):
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
         for week in self.monthdays2calendar(self.year, self.month):
-            cal += f'{self.formatweek(week, events)}\n'
+            cal += f'{self.formatweek(week, events,self.month)}\n'
         return cal
+    
+
+    def is_holiday(self,date_to_check):
+
+        holiday = Holiday.objects.filter(local_date=date_to_check).exists()
+        
+        return holiday
