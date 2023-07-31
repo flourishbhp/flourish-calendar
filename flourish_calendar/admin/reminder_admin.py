@@ -5,7 +5,9 @@ from ..models import Reminder
 from ..forms import ReminderForm
 from ..admin_site import flourish_calendar_admin
 from edc_model_admin import audit_fieldset_tuple
-from edc_model_admin.model_admin_basic_mixin import ModelAdminBasicMixin
+from edc_model_admin import (
+    ModelAdminBasicMixin, ModelAdminFormAutoNumberMixin, 
+    ModelAdminNextUrlRedirectMixin, ModelAdminAuditFieldsMixin)
 from edc_model_admin.model_admin_next_url_redirect_mixin import ModelAdminNextUrlRedirectMixin
 
 
@@ -13,6 +15,8 @@ from edc_model_admin.model_admin_next_url_redirect_mixin import ModelAdminNextUr
 class ReminderAdmin(
         ModelAdminBasicMixin,
         ModelAdminNextUrlRedirectMixin,
+        ModelAdminFormAutoNumberMixin,
+        ModelAdminAuditFieldsMixin,
         admin.ModelAdmin):
 
     form = ReminderForm
