@@ -13,6 +13,5 @@ jobs:
       with:
         source_repo: "https://github.com/flourishbhp/flourish-calendar.git"
         source_branch: "develop"
-        destination_repo: "https://github.com/${{ github.repository }}.git"
         destination_branch: "develop"
         github_token: ${{ secrets.GITHUB_TOKEN }}
