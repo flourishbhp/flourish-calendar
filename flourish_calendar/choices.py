@@ -19,14 +19,14 @@ REMINDER_STATUS = (
 )
 
 COLORS = (
-    ('green', 'Green'),
-    ('red', 'Red'),
+    ('green', 'Green - Done'),
+    ('red', 'Red - Missed/Canceled appointment'),
     ('grey', 'Grey'),
-    ('yellow', 'Yellow'),
-    ('purple', 'Purple'),
-    ('pink', 'Pink'),
-    ('blue', 'Blue'),
-    ('teal', 'Teal'),
+    ('yellow', 'Yellow - Recalls'),
+    ('purple', 'Purple - Home visits'),
+    ('pink', 'Pink - Clinic updates'),
+    ('blue', 'Blue - Pick ups'),
+    ('teal', 'Teal - Leaves: Annual/Sick'),
     ('black', 'Black')
 )
 
