@@ -64,9 +64,9 @@ class CustomCalendar(HTMLCalendar):
                 participant_note_counter += 1
 
         if day and month:
-        
+
             today_day = datetime.today().day
-            if self.is_holiday(date(datetime.today().year,month,day)):
+            if self.is_holiday(date(self.year,month,day)):
 
                return f'''\
                     <td>
