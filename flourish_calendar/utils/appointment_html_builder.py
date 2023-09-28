@@ -167,7 +167,8 @@ class AppointmentHtmlBuilder:
         icon = None
         schedule_name = self._appointment.schedule_name
         appt_datetime = self._appointment.appt_datetime
-        if '_fu' in schedule_name and 'qt' not in schedule_name:
+        if (self.is_child and
+                '_fu' in schedule_name and 'qt' not in schedule_name):
             try:
                 self.child_visit_cls.objects.get(
                     appointment=self._appointment.id)
