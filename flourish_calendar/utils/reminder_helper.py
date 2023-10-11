@@ -1,107 +1,54 @@
-
-import calendar
 import datetime
-from django.forms import model_to_dict
+
+from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
-from ..constants import DAILY, WEEKLY, MONTHLY, WEEKDAYS, YEARLY
+from django.forms import model_to_dict
+
+from ..constants import DAILY, MONTHLY, WEEKLY, YEARLY
 from ..models import Reminder
 
 
-class ReminderDuplicator:
-
+class WorkingDays:
     holiday_model = 'edc_facility.holiday'
 
-    def __init__(self, reminder):
+    def holiday(self, day):
+        return django_apps.get_model(self.holiday_model).objects.filter(
+            local_date=day).exists()
+
+    def is_valid_working_day(self, day):
+        return day.weekday() < 5 and not self.holiday(day)
+
+
+class ReminderDuplicator(WorkingDays):
+    def __init__(self, reminder: Reminder):
         self.reminder = reminder
-
-    @property
-    def holiday_cls(self):
-        return django_apps.get_model(self.holiday_model)
-
-    def is_holiday(self, date):
-        return self.holiday_cls.objects.filter(
-            local_date=date
-        ).exists()
+        self.validation_of_days = {
+            DAILY: datetime.timedelta(days=1),
+            WEEKLY: datetime.timedelta(days=7),
+            MONTHLY: relativedelta(months=1),
+            YEARLY: relativedelta(years=1)
+        }
 
     def repeat(self):
-
-        reminder_date = self.reminder.date
-        dates = []
-        reminders = []
-
-        if self.reminder.repeat == DAILY:
-
-            dates = self._get_working_days(
-                reminder_date.year, reminder_date.month)
-
-        elif self.reminder.repeat == WEEKLY:
-
-            dates = self._get_weekdays(
-                reminder_date.year,
-                reminder_date.month,
-                reminder_date.weekday()
-            )
-        elif self.reminder.repeat == MONTHLY:
-            self._get_dates_after_n_days(
-                reminder_date.year,
-                reminder_date,
-                30
-            )
-        elif self.reminder.repeat == YEARLY:
-            self._get_dates_after_n_days(
-                reminder_date.year,
-                reminder_date,
-                365,
-                datetime.date(2025, 6, 30)
-            )
-        else:
-            pass
-
-        for date in dates:
-
-            if date <= self.reminder.date or self.is_holiday(date):
-                continue
-
-            reminder_dict = model_to_dict(self.reminder)
-            reminder_dict['datetime'] = datetime.datetime.combine(
-                date, self.reminder.datetime.time())
-
-            reminders.append(Reminder(**reminder_dict))
-
+        dates = self._get_dates_based_on_recurrence()
+        reminders = [self._create_new_reminder(date) for date in dates]
         Reminder.objects.bulk_create(reminders)
 
-    def _get_working_days(self, year, month):
-        # get total number of days in the month
-        num_days = calendar.monthrange(year, month)[1]
+    def _get_dates_based_on_recurrence(self):
+        return [date for date in self._generate_potential_dates() if
+                self.is_valid_working_day(date)]
 
-        # loop through all days in the month
-        working_days = []
-        for day in range(1, num_days+1):
-            date = datetime.date(year, month, day)
-            # check if the day is a weekday (0 = Monday, 6 = Sunday)
-            if date.weekday() < 5:
-                working_days.append(date)
+    def _generate_potential_dates(self):
+        date_increment_value = self.validation_of_days[self.reminder.repeat]
+        date_series = []
+        current_date = self.reminder.start_date
+        while current_date <= self.reminder.end_date:
+            date_series.append(current_date)
+            current_date += date_increment_value
+        return date_series
 
-        # return the list of working days
-        return working_days
-
-    def _get_weekdays(self, year, month, day_of_week):
-        weekdays = []
-        cal = calendar.Calendar()
-        for day in cal.itermonthdates(year, month):
-            if day.weekday() == day_of_week:
-                weekdays.append(day)
-        return weekdays
-
-    def _get_dates_after_n_days(self, year, start_date, n, end_date=None):
-        start_date = datetime.date(year, start_date.month, start_date.day)
-        end_date = end_date or datetime.date(year + 1, 1, 1)
-        delta = datetime.timedelta(days=n)
-
-        dates = []
-        date = start_date
-        while date < end_date:
-            dates.append(date)
-            date += delta
-
-        return dates
+    def _create_new_reminder(self, date):
+        reminder_dict = model_to_dict(self.reminder)
+        datetime_object = datetime.datetime.combine(date, self.reminder.remainder_time)
+        reminder_dict.update({'datetime': datetime_object})
+        return Reminder(**reminder_dict)

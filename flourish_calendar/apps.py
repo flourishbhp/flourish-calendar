@@ -1,7 +1,7 @@
-from django.apps import AppConfig as DjangoApponfig
+from django.apps import AppConfig as DjangoAppConfig
 
 
-class AppConfig(DjangoApponfig):
+class AppConfig(DjangoAppConfig):
     name = 'flourish_calendar'
     app_name = 'flourish_calendar'
     app_label = 'flourish_calendar'
