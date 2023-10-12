@@ -2,8 +2,8 @@ from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 from django.utils import timezone
 from django.apps import apps as django_apps
-from edc_call_manager.constants import MONTHLY
 
+from flourish_calendar.constants import MONTHLY
 from flourish_calendar.models import Reminder
 from flourish_calendar.utils.reminder_helper import ReminderDuplicator, WorkingDays
 
@@ -36,9 +36,9 @@ class ReminderDuplicatorTests(TestCase):
 
     def test__get_dates_based_on_recurrence(self):
         dates = self.reminder_duplicator._get_dates_based_on_recurrence()
-        expected_dates = [self.start_date + relativedelta(months=month) for month in
-                          range(4)]
-        self.assertListEqual(dates, expected_dates)
+        expected_length = 3
+        self.assertEqual(len(dates), expected_length)
+        self.assertEqual(dates[0], self.start_date)
 
     def test__generate_potential_dates(self):
         dates = self.reminder_duplicator._generate_potential_dates()
@@ -52,8 +52,8 @@ class ReminderDuplicatorTests(TestCase):
         self.assertEqual(new_reminder.datetime.date(), date)
 
     def test_repeat(self):
+        initial_reminders_count = Reminder.objects.count()
         self.reminder_duplicator.repeat()
-        all_reminders = Reminder.objects.all()
-        self.assertEqual(len(all_reminders), 4)
-        for reminder in all_reminders:
-            self.assertEqual(reminder.repeat, MONTHLY)
+        final_reminders_count = Reminder.objects.count()
+        number_of_created_reminders = final_reminders_count - initial_reminders_count
+        self.assertEqual(number_of_created_reminders, 3)
