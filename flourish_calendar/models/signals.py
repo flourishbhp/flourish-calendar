@@ -5,6 +5,6 @@ from .reminder_model import Reminder
 
 @receiver(post_save, sender=Reminder)
 def reminder_post_save(sender, instance, created, **kwargs):
-    if instance and not instance.is_repeated:
-        duplicator = ReminderDuplicator(instance)
-        duplicator.repeat()
+    if instance and not instance.is_repeated and created:
+        ReminderDuplicator(instance).repeat()
+        instance.delete()
