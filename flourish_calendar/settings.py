@@ -6,17 +6,37 @@ APP_NAME = 'flourish_calendar'
 
 DEBUG = True
 
+DEVICE_ID = 4
+
+DEVICE_ROLE = 'Client'
+
+SECRET_KEY = 'secret'
+
+DEFAULT_STUDY_SITE = 'site1'
+
 ALLOWED_HOSTS = ['localhost']
+
+SITE_ID = 1
+
+BASE_FORMAT = '%Y-%m-%d'
+
+ETC_DIR = os.path.join(BASE_DIR, APP_NAME)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
+    'django_crypto_fields.apps.AppConfig',
+    'edc_action_item.apps.AppConfig',
     'edc_calendar.apps.AppConfig',
+    'edc_device.apps.AppConfig',
+    'edc_lab.apps.AppConfig',
+    'edc_visit_schedule.apps.AppConfig',
+    'flourish.apps.AppConfig',
     'flourish.apps.EdcAppointmentAppConfig',
     'flourish.apps.EdcBaseAppConfig',
     'flourish.apps.EdcDataManagerAppConfig',
@@ -25,10 +45,15 @@ INSTALLED_APPS = [
     'flourish.apps.EdcMetadataAppConfig',
     'flourish.apps.EdcOdkAppConfig',
     'flourish.apps.EdcProtocolAppConfig',
-    'flourish.apps.EdcVisitTrackingAppConfig',
+    'flourish.apps.EdcSenaiteInterfaceAppConfig',
     'flourish.apps.EdcTimepointAppConfig',
+    'flourish.apps.EdcVisitTrackingAppConfig',
+    'flourish_caregiver.apps.AppConfig',
+    'flourish_child.apps.AppConfig',
+    'flourish_follow.apps.AppConfig',
+    'flourish_prn.apps.AppConfig',
     'pre_flourish.apps.AppConfig',
-    'flourish.apps.AppConfig',
+    'pre_flourish_follow.apps.AppConfig',
     'flourish_calendar.apps.AppConfig',
 ]
 
@@ -40,6 +65,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'edc_dashboard.middleware.DashboardMiddleware',
+    'edc_subject_dashboard.middleware.DashboardMiddleware',
+
 ]
 
 ROOT_URLCONF = 'flourish_calendar.urls'
@@ -71,7 +99,8 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
@@ -84,6 +113,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DASHBOARD_URL_NAMES = {
+    'subject_dashboard_url': 'flourish_dashboard:subject_dashboard_url',
+}
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -93,6 +126,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+COUNTRY = 'botswana'
 
 STATIC_URL = '/static/'
 
