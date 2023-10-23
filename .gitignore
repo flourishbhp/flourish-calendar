@@ -132,3 +132,4 @@ dmypy.json
 **/migrations/**
 **/settings.py
 **/.idea/**
+crypto_fields/*

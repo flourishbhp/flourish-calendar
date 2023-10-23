@@ -8,6 +8,7 @@ from edc_appointment.choices import (
     CANCELLED_APPT
 )
 from edc_appointment.models import Appointment
+from edc_base.utils import get_utcnow
 
 from flourish_dashboard.model_wrappers.caregiver_locator_model_wrapper import \
     CaregiverLocatorModelWrapper
@@ -19,6 +20,7 @@ from ..models import AppointmentStatus, ParticipantNote
 class AppointmentHtmlBuilder:
     child_appointment_model = 'flourish_child.appointment'
     caregiver_locator_model = 'flourish_caregiver.caregiverlocator'
+    child_visit_model = 'flourish_child.childvisit'
 
     def __init__(self, appointment: Appointment, request) -> None:
         self._appointment = appointment
@@ -32,6 +34,10 @@ class AppointmentHtmlBuilder:
     @property
     def caregiver_locator_cls(self):
         return django_apps.get_model(self.caregiver_locator_model)
+
+    @property
+    def child_visit_cls(self):
+        return django_apps.get_model(self.child_visit_model)
 
     @property
     def model_obj(self):
@@ -151,19 +157,33 @@ class AppointmentHtmlBuilder:
     @property
     def add_reschedule_reason(self):
         # if self.resceduled_appointments_count:
-        return f'''<br> <a href='{self.participant_note_wrapper.href}title = {self.subject_identifier} - Rescedule reason'></a> '''
+        return f'''<br> <a href='{self.participant_note_wrapper.href}title = {self.subject_identifier} - Reschedule reason'></a> '''
 
     def _html(self, dashboard_type):
         view_locator_href = None
+        status_color = None
         if self.wrapped_locator_obj:
             view_locator_href = self.wrapped_locator_obj.href
         icon = None
-        if 'quart' in self._appointment.schedule_name:
+        schedule_name = self._appointment.schedule_name
+        appt_datetime = self._appointment.appt_datetime
+        if (self.is_child and
+                '_fu' in schedule_name and 'qt' not in schedule_name):
+            try:
+                self.child_visit_cls.objects.get(
+                    appointment=self._appointment.id)
+            except self.child_visit_cls.DoesNotExist:
+                cohort_name = schedule_name.split('_')[1]
+                icon = f'[{cohort_name.upper()}] ➡️' if appt_datetime >= get_utcnow() else '👩'
+                status_color = 'black'
+            else:
+                icon = '👩'
+        elif 'quart' in schedule_name:
             icon = '📞'
         else:
             icon = '👩'
         view = render_to_string('flourish_calendar/appointment_template.html', {
-            'status_color': self.status_color,
+            'status_color': self.status_color or status_color,
             'dashboard_type': dashboard_type,
             'subject_identifier': self.subject_identifier,
             'visit_code': self.visit_code,

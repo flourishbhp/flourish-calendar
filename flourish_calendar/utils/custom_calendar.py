@@ -1,5 +1,5 @@
 from calendar import HTMLCalendar
-from datetime import datetime
+from datetime import datetime, date
 
 from django.apps import apps as django_apps
 from django.db.models import Q
@@ -7,12 +7,12 @@ from requests import request
 
 from edc_appointment.constants import NEW_APPT
 from edc_appointment.models import Appointment
+from edc_base.utils import get_utcnow
 
 from ..models import ParticipantNote, Reminder
 from .appointment_html_builder import AppointmentHtmlBuilder
 from .reminder_html_builder import ReminderHtmlBuilder
 from edc_facility.models import Holiday
-from datetime import date
 
 
 class CustomCalendar(HTMLCalendar):
@@ -192,10 +192,18 @@ class CustomCalendar(HTMLCalendar):
                 date__year=self.year, date__month=self.month
             )
 
+            fu_appts = self.children_appointment_cls.objects.filter(
+                Q(schedule_name__icontains='_fu') & ~Q(schedule_name__icontains='qt'),
+                user_modified='flourish',
+                appt_datetime__gte=get_utcnow(),
+                appt_datetime__year=self.year,
+                appt_datetime__month=self.month,)
+
             events.extend(list(reminders))
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
+            events.extend(list(fu_appts))
 
         events = list(filter(lambda e: 'comment' not in getattr(e, 'title', '').lower(),
                              events))
