@@ -1,7 +1,11 @@
 from django import forms
 from ..models import Reminder
+from edc_form_validators import FormValidatorMixin
+from ..form_validations import NoteFormValidator
 
-class ReminderForm(forms.ModelForm):
+
+class ReminderForm(FormValidatorMixin, forms.ModelForm):
+    form_validator_cls = NoteFormValidator
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
