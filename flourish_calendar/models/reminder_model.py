@@ -1,7 +1,6 @@
 import django.utils.timezone
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
-from edc_base.model_validators import date_not_future
 from edc_protocol.validators import date_not_before_study_start
 
 from ..choices import COLORS, REPEAT
@@ -14,15 +13,13 @@ class Reminder(BaseUuidModel):
 
     start_date = models.DateField(
         validators=[
-            date_not_before_study_start,
-            date_not_future],
+            date_not_before_study_start],
 
     )
 
     end_date = models.DateField(
         validators=[
-            date_not_before_study_start,
-            date_not_future],
+            date_not_before_study_start],
     )
 
     remainder_time = models.TimeField()
