@@ -1,6 +1,7 @@
 import django.utils.timezone
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
+from edc_protocol.validators import date_not_before_study_start
 
 from ..choices import COLORS, REPEAT
 
@@ -10,23 +11,25 @@ class Reminder(BaseUuidModel):
 
     title = models.CharField(max_length=70)
 
-    start_date = models.DateField()
+    start_date = models.DateField(
+        validators=[
+            date_not_before_study_start],
 
-    end_date = models.DateField()
+    )
+
+    end_date = models.DateField(
+        validators=[
+            date_not_before_study_start],
+    )
 
     remainder_time = models.TimeField()
 
     note = models.TextField(blank=True, null=True)
 
     color = models.CharField(max_length=20,
-                             blank=True,
-                             null=True,
                              choices=COLORS)
 
     repeat = models.CharField(
-        default=None,
-        null=True,
-        blank=True,
         choices=REPEAT,
         max_length=10
     )
