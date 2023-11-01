@@ -46,6 +46,8 @@ class CustomCalendar(HTMLCalendar):
                 if event.date.day == day:
                     events_per_day.append(event)
 
+            # breakpoint()
+
         d = ''
         appointment_counter = 0
         reminder_counter = 0

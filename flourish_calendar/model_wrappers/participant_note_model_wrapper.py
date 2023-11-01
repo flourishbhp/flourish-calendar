@@ -14,7 +14,6 @@ class ParticipantNoteModelWrapper(ModelWrapper):
     def title(self):
         return self.object.title
 
-
     @property
     def comments(self):
         commments = self.model_cls.objects.filter(title__icontains='comment')
@@ -28,5 +27,12 @@ class ParticipantNoteModelWrapper(ModelWrapper):
     def cohort(self):
         child_cohort = self.child_consent_cls.objects.filter(
             subject_identifier=self.object.subject_identifier).only('cohort').first()
-        if child_cohort:
-            return getattr(child_cohort, 'cohort').replace('cohort_', '')
+        if child_cohort and child_cohort.cohort:
+            return child_cohort.cohort.replace('cohort_', '')
+
+    @property
+    def title(self):
+        if 'follow' in self.object.title.lower() and self.cohort:
+            return f'{self.object.subject_identifier}[{self.cohort.upper()}]'
+        else:
+            return self.object.title
