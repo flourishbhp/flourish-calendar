@@ -31,7 +31,7 @@ class CustomCalendar(HTMLCalendar):
 
     # formats a day as a td
     # filter events by day
-    def formatday(self, day, events,month):
+    def formatday(self, day, events, month):
 
         events_per_day = []
         for event in events:
@@ -66,16 +66,16 @@ class CustomCalendar(HTMLCalendar):
         if day and month:
 
             today_day = datetime.today().day
-            if self.is_holiday(date(self.year,month,day)):
+            if self.is_holiday(date(self.year, month, day)):
 
-               return f'''\
+                return f'''\
                     <td>
                         <span class='date {"today" if day == today_day else ""}'>{day}</span>
                         <span class='holiday-banner'>Public Holiday</span>
                         <ul style="height: 200px; overflow: scroll;"> {d} </ul>
                         <p align="center" style="padding-top: 2px; margin-botton: 1 px; border-top: 1px solid #17a2b8;" >A ({appointment_counter}) R ({reminder_counter}) N ({participant_note_counter})</p>
                     </td>
-                    '''    
+                    '''
             return f'''\
                     <td>
                         <span class='date {"today" if day == today_day else ""}'>{day}</span>
@@ -86,10 +86,10 @@ class CustomCalendar(HTMLCalendar):
         return '<td></td>'
 
     # formats a week as a tr
-    def formatweek(self, theweek, events,month):
+    def formatweek(self, theweek, events, month):
         week = ''
         for d, weekday in theweek:
-            week += self.formatday(d, events,month)
+            week += self.formatday(d, events, month)
         return f'<tr> {week} </tr>'
 
     # formats a month as a table
@@ -138,6 +138,19 @@ class CustomCalendar(HTMLCalendar):
             )
             events = list(participant_notes)
 
+        elif self.filter == 'facet':
+            participant_notes = ParticipantNote.objects.filter(
+                date__year=self.year, date__month=self.month,
+                title__icontains='facet'
+            )
+
+            reminders = Reminder.objects.filter(
+                datetime__year=self.year, datetime__month=self.month,
+                title__icontains='facet'
+            )
+            events = list(participant_notes)
+            events.extend(reminders)
+
         elif self.filter == 'follow_up':
             participant_notes = ParticipantNote.objects.filter(
                 q_objects,
@@ -158,7 +171,7 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter).exclude(
                     schedule_name__in=secondary_schedule_names
-                )
+            )
             events = list(caregiver_appointments)
 
         elif self.filter in ['a_sec', 'b_sec', 'c_sec']:
@@ -214,10 +227,9 @@ class CustomCalendar(HTMLCalendar):
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f'{self.formatweek(week, events,self.month)}\n'
         return cal
-    
 
-    def is_holiday(self,date_to_check):
+    def is_holiday(self, date_to_check):
 
         holiday = Holiday.objects.filter(local_date=date_to_check).exists()
-        
+
         return holiday
