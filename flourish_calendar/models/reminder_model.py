@@ -7,7 +7,7 @@ from ..choices import COLORS, REPEAT
 
 
 class Reminder(BaseUuidModel):
-    datetime = models.DateTimeField(default=django.utils.timezone.now)
+    datetime = models.DateTimeField(blank=True, null=True)
 
     title = models.CharField(max_length=70)
 

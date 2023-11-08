@@ -39,7 +39,7 @@ class CustomCalendar(HTMLCalendar):
                 if event.appt_datetime.day == day:
                     events_per_day.append(event)
             elif isinstance(event, Reminder):
-                if event.start_date.day == day:
+                if event.datetime.day == day:
                     events_per_day.append(event)
 
             elif isinstance(event, ParticipantNote):
