@@ -67,7 +67,6 @@ class CustomCalendar(HTMLCalendar):
 
             today_day = datetime.today().day
             if self.is_holiday(date(self.year, month, day)):
-
                 return f'''\
                     <td>
                         <span class='date {"today" if day == today_day else ""}'>{day}</span>
@@ -122,7 +121,7 @@ class CustomCalendar(HTMLCalendar):
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month).exclude(
-                    schedule_name__icontains='quart'
+                schedule_name__icontains='quart'
             )
             events = list(child_appointments)
 
@@ -161,8 +160,8 @@ class CustomCalendar(HTMLCalendar):
             events = list(participant_notes)
 
         elif self.filter in ['a', 'b', 'c']:
-            secondary_schedule_names = Appointment.objects.filter(schedule_name__icontains='_sec')\
-                .values_list('schedule_name', flat=True)\
+            secondary_schedule_names = Appointment.objects.filter(schedule_name__icontains='_sec') \
+                .values_list('schedule_name', flat=True) \
                 .distinct()
 
             caregiver_appointments = Appointment.objects.filter(
@@ -170,7 +169,7 @@ class CustomCalendar(HTMLCalendar):
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month,
                 schedule_name__istartswith=self.filter).exclude(
-                    schedule_name__in=secondary_schedule_names
+                schedule_name__in=secondary_schedule_names
             )
             events = list(caregiver_appointments)
 
@@ -191,8 +190,8 @@ class CustomCalendar(HTMLCalendar):
             child_appointments = self.children_appointment_cls.objects.filter(
                 ~Q(user_modified='flourish') & q_objects,
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month,).exclude(
-                    schedule_name__icontains='quart'
+                appt_datetime__month=self.month, ).exclude(
+                schedule_name__icontains='quart'
             )
 
             reminders = Reminder.objects.filter(
@@ -210,7 +209,7 @@ class CustomCalendar(HTMLCalendar):
                 user_modified='flourish',
                 appt_datetime__gte=get_utcnow(),
                 appt_datetime__year=self.year,
-                appt_datetime__month=self.month,)
+                appt_datetime__month=self.month, )
 
             events.extend(list(reminders))
             events.extend(list(participant_notes))
@@ -225,7 +224,7 @@ class CustomCalendar(HTMLCalendar):
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
         for week in self.monthdays2calendar(self.year, self.month):
-            cal += f'{self.formatweek(week, events,self.month)}\n'
+            cal += f'{self.formatweek(week, events, self.month)}\n'
         return cal
 
     def is_holiday(self, date_to_check):
