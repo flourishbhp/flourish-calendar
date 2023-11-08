@@ -18,6 +18,8 @@ class Reminder(BaseUuidModel):
     )
 
     end_date = models.DateField(
+        blank=True,
+        null=True,
         validators=[
             date_not_before_study_start],
     )
