@@ -1,3 +1,4 @@
+ONCE = 'once'
 DAILY = 'daily'
 WEEKLY = 'weakly'
 MONTHLY = 'monthly'
