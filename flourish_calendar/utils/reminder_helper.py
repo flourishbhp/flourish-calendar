@@ -42,12 +42,19 @@ class ReminderDuplicator(WorkingDays):
     def _generate_potential_dates(self):
         date_series = []
 
-        if self.reminder.repeat and self.reminder.end_date:
-            date_increment_value = self.validation_of_days[self.reminder.repeat]
-            current_date = self.reminder.start_date
-            while current_date <= self.reminder.end_date:
-                date_series.append(current_date)
-                current_date += date_increment_value
+        start_date = self.reminder.start_date
+        end_date = self.reminder.end_date
+        repeat = self.reminder.repeat or ONCE  # for backward compatibility
+
+        date_increment_value = self.validation_of_days[repeat]
+
+        if repeat == ONCE:
+            date_series.append(start_date)
+        else:
+            while start_date <= end_date:
+                date_series.append(start_date)
+                start_date += date_increment_value
+
         return date_series
 
     def _create_new_reminder(self, date):
