@@ -167,15 +167,14 @@ class AppointmentHtmlBuilder:
         icon = None
         schedule_name = self._appointment.schedule_name
         appt_datetime = self._appointment.appt_datetime
-        if (self.is_child and
-                '_fu' in schedule_name and 'qt' not in schedule_name):
+        if self.is_child and 'sq_fu' in schedule_name:
             try:
                 self.child_visit_cls.objects.get(
                     appointment=self._appointment.id)
             except self.child_visit_cls.DoesNotExist:
                 cohort_name = schedule_name.split('_')[1]
                 icon = f'[{cohort_name.upper()}] ➡️' if appt_datetime >= get_utcnow() else '👩'
-                status_color = 'black'
+                status_color = 'orange'
             else:
                 icon = '👩'
         elif 'quart' in schedule_name:
