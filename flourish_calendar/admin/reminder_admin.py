@@ -47,6 +47,10 @@ class ReminderAdmin(ModelAdminBasicMixin,
         'repeat': admin.HORIZONTAL
     }
 
+    list_display = ('title', 'note', 'repeat', 'start_date', 'end_date',)
+
+    search_fields = ('title', 'note', 'repeat')
+
     def redirect_url_on_delete(self, request, obj_display, obj_id):
         url = settings.DASHBOARD_URL_NAMES.get('flourish_calendar_url')
         return reverse(url)

@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.forms import model_to_dict
 
-from ..constants import DAILY, MONTHLY, WEEKLY, YEARLY
+from ..constants import DAILY, MONTHLY, WEEKLY, YEARLY, ONCE
 from ..models import Reminder
 
 
@@ -23,6 +23,7 @@ class ReminderDuplicator(WorkingDays):
     def __init__(self, reminder: Reminder):
         self.reminder = reminder
         self.validation_of_days = {
+            ONCE: relativedelta(days=0),
             DAILY: datetime.timedelta(days=1),
             WEEKLY: datetime.timedelta(days=7),
             MONTHLY: relativedelta(months=1),
@@ -41,12 +42,19 @@ class ReminderDuplicator(WorkingDays):
     def _generate_potential_dates(self):
         date_series = []
 
-        if self.reminder.repeat:
-            date_increment_value = self.validation_of_days[self.reminder.repeat]
-            current_date = self.reminder.start_date
-            while current_date <= self.reminder.end_date:
-                date_series.append(current_date)
-                current_date += date_increment_value
+        start_date = self.reminder.start_date
+        end_date = self.reminder.end_date
+        repeat = self.reminder.repeat or ONCE  # for backward compatibility
+
+        date_increment_value = self.validation_of_days[repeat]
+
+        if repeat == ONCE:
+            date_series.append(start_date)
+        else:
+            while start_date <= end_date:
+                date_series.append(start_date)
+                start_date += date_increment_value
+
         return date_series
 
     def _create_new_reminder(self, date):

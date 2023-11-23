@@ -1,150 +1,151 @@
 {% extends 'flourish_calendar/base.html' %}
 
 {% block extra-styles %}
-    {{ block.super }}
-    <style>
-        .label {
-            display: inline;
-            padding: .2em .6em .3em;
-        }
+{{ block.super }}
+<style>
+    .label {
+        display: inline;
+        padding: .2em .6em .3em;
+    }
 
-        .label-pink {
-            background-color: pink;
-        }
+    .label-pink {
+        background-color: pink;
+    }
 
-        .label-teal {
-            background-color: teal;
-        }
+    .label-teal {
+        background-color: teal;
+    }
 
-        .label-purple {
-            background-color: purple;
-        }
-        .key-body{
-            display: flex;
-            flex-direction: row;
-        }
-    </style>
+    .label-purple {
+        background-color: purple;
+    }
+
+    .key-body {
+        display: flex;
+        flex-direction: row;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="clearfix">
-        {% if search_term or search_filter %}
-            <a class="btn btn-info left"
-               href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}&search_term={{ search_term }}&filter={{ search_filter }}">
-                Previous Month </a>
-            <a class="btn btn-info right"
-               href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}&search_term={{ search_term }}&filter={{ search_filter }}">
-                Next Month </a>
+<div class="clearfix">
+    {% if search_term or search_filter %}
+    <a class="btn btn-info left"
+        href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}&search_term={{ search_term }}&filter={{ search_filter }}">
+        Previous Month </a>
+    <a class="btn btn-info right"
+        href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}&search_term={{ search_term }}&filter={{ search_filter }}">
+        Next Month </a>
+    {% else %}
+    <a class="btn btn-info left" href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}"> Previous
+        Month </a>
+    <a class="btn btn-info right" href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}"> Next
+        Month </a>
+    {% endif %}
+    <form class="filter-form" method="get" action="">
+        {% if search_term %}
+        <input name="search_term" value="{{ search_term }}" type="text" class="form-control"
+            placeholder="Search for...">
         {% else %}
-            <a class="btn btn-info left"
-               href="{% url 'flourish_calendar:calendar' %}?{{ prev_month }}"> Previous
-                Month </a>
-            <a class="btn btn-info right"
-               href="{% url 'flourish_calendar:calendar' %}?{{ next_month }}"> Next
-                Month </a>
+        <input name="search_term" value="" type="text" class="form-control" placeholder="Search for...">
         {% endif %}
-        <form class="filter-form" method="get" action="">
-            {% if search_term %}
-                <input name="search_term" value="{{ search_term }}" type="text"
-                       class="form-control" placeholder="Search for...">
+
+        <select name="filter" value={{ filter }} class="form-control">
+            <option value="all"> All</option>
+            <option value="caregiver"> Caregiver</option>
+            <option value="children"> Children</option>
+            <option value="reminder">Reminder Notes</option>
+            <option value="facet">FACET</option>
+            <option value="participant_notes">Participant Notes</option>
+            <option value="follow_up">Follow-ups</option>
+            <option value="a"> Cohort A Enrolment</option>
+            <option value="b"> Cohort B Enrolment</option>
+            <option value="c"> Cohort C Enrolment</option>
+            <option value="a_sec"> Cohort A Secondary Aims</option>
+            <option value="b_sec"> Cohort B Secondary Aims</option>
+            <option value="c_sec"> Cohort C Secondary Aims</option>
+        </select>
+        <button class="btn">Filter</button>
+    </form>
+    <a href="{{ new_reminder_url }}" class="btn btn-info">New Note</a>
+    <a href="{{ new_participant_note_url }}" class="btn btn-info">New Follow Up
+        Note</a>
+
+    <a href="/admin/flourish_calendar/" class="btn btn-info">Calendar Admin</a>
+
+
+
+</div>
+{% if appointment_search_results %}
+<div>
+    <h5>Appointments</h5>
+    <table class="table">
+
+        <tr>
+            <th>Visit Code</th>
+            <th>Subject Identifier</th>
+            <th>Appointment Date</th>
+            <th>Navigate</th>
+        </tr>
+
+        {% for search_result in appointment_search_results %}
+
+        <tr>
+            <td>{{ search_result.visit_code }}</td>
+            <td>{{ search_result.subject_identifier }}</td>
+            <td>{{ search_result.appt_datetime|date:'Y-m-d'}}</td>
+            <td><a class="btn btn-primary"
+                    href="?month={{ search_result.appt_datetime.year }}-{{ search_result.appt_datetime.month }}">
+                    Navigate To Month
+                </a></td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+</div>
+{% endif %}
+
+{% if notes_search_results %}
+<div>
+    <h5>Reminders & Notes</h5>
+    <table class="table">
+
+        <tr>
+            <th>Title</th>
+            <th>Subject Identifier</th>
+            <th>Date</th>
+            <th>Navigate</th>
+
+
+        </tr>
+
+        {% for search_result in notes_search_results %}
+
+        <tr>
+            <td>{{ search_result.title }}</td>
+
+            {% if search_result.subject_identifier %}
+            <td>{{ search_result.subject_identifier }}</td>
             {% else %}
-                <input name="search_term" value="" type="text" class="form-control"
-                       placeholder="Search for...">
+            <td>N/A</td>
             {% endif %}
 
-            <select name="filter" value={{ filter }} class="form-control">
-                <option value="all"> All</option>
-                <option value="caregiver"> Caregiver</option>
-                <option value="children"> Children</option>
-                <option value="reminder">Reminder Notes</option>
-                <option value="participant_notes">Participant Notes</option>
-                <option value="follow_up">Follow-ups</option>
-                <option value="a"> Cohort A Enrolment</option>
-                <option value="b"> Cohort B Enrolment</option>
-                <option value="c"> Cohort C Enrolment</option>
-                <option value="a_sec"> Cohort A Secondary Aims</option>
-                <option value="b_sec"> Cohort B Secondary Aims</option>
-                <option value="c_sec"> Cohort C Secondary Aims</option>
-            </select>
-            <button class="btn">Filter</button>
-        </form>
-        <a href="{{ new_reminder_url }}" class="btn btn-info">New Note</a>
-        <a href="{{ new_participant_note_url }}" class="btn btn-info">New Follow Up
-            Note</a>
+            {% if search_result.date %}
+            <td>{{ search_result.date }}</td>
+            {% else %}
+            <td>N/A</td>
+            {% endif %}
+            <td><a class="btn btn-primary" href="?month={{ search_result.date.year }}-{{ search_result.date.month }}">
+                    Navigate To Month
+                </a></td>
 
+        </tr>
 
-    </div>
-    {% if appointment_search_results %}
-        <div>
-            <h5>Appointments</h5>
-            <table class="table">
+        {% endfor %}
 
-                <tr>
-                    <th>Visit Code</th>
-                    <th>Subject Identifier</th>
-                    <th>Appointment Date</th>
-                    <th>Navigate</th>
-                </tr>
-
-                {% for search_result in appointment_search_results %}
-
-                    <tr>
-                        <td>{{ search_result.visit_code }}</td>
-                        <td>{{ search_result.subject_identifier }}</td>
-                        <td>{{ search_result.appt_datetime|date:'Y-m-d'}}</td>
-                        <td><a class="btn btn-primary"
-                               href="?month={{ search_result.appt_datetime.year }}-{{ search_result.appt_datetime.month }}">
-                            Navigate To Month
-                        </a></td>
-                    </tr>
-
-                {% endfor %}
-
-            </table>
-        </div>
-    {% endif %}
-
-    {% if notes_search_results %}
-        <div>
-            <h5>Reminders & Notes</h5>
-            <table class="table">
-
-                <tr>
-                    <th>Title</th>
-                    <th>Subject Identifier</th>
-                    <th>Date</th>
-                    <th>Navigate</th>
-
-
-                </tr>
-
-                {% for search_result in notes_search_results %}
-
-                    <tr>
-                        <td>{{ search_result.title }}</td>
-
-                        {% if search_result.subject_identifier %}
-                            <td>{{ search_result.subject_identifier }}</td>
-                        {% else %}
-                            <td>N/A</td>
-                        {% endif %}
-
-                        {% if search_result.date %}
-                            <td>{{ search_result.date }}</td>
-                        {% else %}
-                            <td>N/A</td>
-                        {% endif %}
-                        <td><a class="btn btn-primary"
-                               href="?month={{ search_result.date.year }}-{{ search_result.date.month }}">
-                            Navigate To Month
-                        </a></td>
-
-                    </tr>
-
-                {% endfor %}
-
-            </table>
-        </div>
-    {% endif %}
-    {{ calendar }}
+    </table>
+</div>
+{% endif %}
+{{ calendar }}
 {% endblock %}
