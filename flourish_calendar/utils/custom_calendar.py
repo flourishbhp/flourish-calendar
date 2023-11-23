@@ -31,7 +31,7 @@ class CustomCalendar(HTMLCalendar):
 
     # formats a day as a td
     # filter events by day
-    def formatday(self, day, events,month):
+    def formatday(self, day, events, month):
 
         events_per_day = []
         for event in events:
