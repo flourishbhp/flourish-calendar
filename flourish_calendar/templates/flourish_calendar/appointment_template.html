@@ -38,9 +38,9 @@
         {% endfor %}">
 
         {% if status_color %}
-            {{ subject_identifier }}
+            {{ subject_identifier }} : {{ visit_code }}
         {% else %}
-            <span style="color: black">{{ subject_identifier }}</span>
+            <span style="color: black">{{ subject_identifier }} : {{ visit_code }}</span>
         {% endif %}
         {{ icon }}
     </button>
