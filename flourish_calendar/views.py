@@ -1,3 +1,7 @@
+import csv
+import datetime
+
+from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.views import generic
 from edc_appointment.models import Appointment
@@ -7,6 +11,8 @@ from edc_navbar import NavbarViewMixin
 from .model_wrappers import ParticipantNoteModelWrapper, ReminderModelWrapper
 from .models import ParticipantNote, Reminder
 from .utils import AppointmentHelper, CustomCalendar, DateHelper
+from .utils.export_helper import children_appointment_cls, collect_events, \
+    extract_cohort_name
 
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
@@ -75,8 +81,9 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
         html_cal = cal.formatmonth(withyear=True)
 
-        appointment_search_results = AppointmentHelper.all_search_appointments(subject_identifier=search_term,
-                                                                               type=search_filter)
+        appointment_search_results = AppointmentHelper.all_search_appointments(
+            subject_identifier=search_term,
+            type=search_filter)
 
         notes_search_results = AppointmentHelper.all_notes(search_term=search_term)
 
@@ -92,3 +99,54 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
             new_participant_note_url=self.new_participant_wrapper.href)
 
         return context
+
+
+def export_events_as_csv(request):
+    csv_headers = ['Event Type', 'Event Date and Time', 'Details', 'Subject Identifier',
+                   'Visit Code', 'Cohort', 'Schedule Name']
+
+    # Generate datetime stamp for file name
+    timestamp_str = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+
+    # Generate HTTP Response Object
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (f'attachment; filename="appointments_from_'
+                                       f'{timestamp_str}.csv"')
+
+    writer = csv.writer(response)
+    writer.writerow(csv_headers)
+
+    events = collect_events(request)
+
+    unified_list = list()
+
+    for event in events:
+        if isinstance(event, (Appointment, children_appointment_cls)):
+            unified_list.append({
+                'Event Type': 'Appointment',
+                'Date': event.appt_datetime,
+                'subject_identifier': event.subject_identifier,
+                'visit_code': event.visit_code,
+                'cohort': extract_cohort_name(event.schedule_name),
+                'schedule_name': event.schedule_name,
+            })
+        elif isinstance(event, Reminder):
+            unified_list.append({
+                'Event Type': 'Reminder',
+                'Date': event.datetime,
+                'Details': f'{event.title}: {event.note}'
+            })
+        elif isinstance(event, ParticipantNote):
+            unified_list.append({
+                'Event Type': 'Participant Note',
+                'Date': event.date,
+                'subject_identifier': event.subject_identifier,
+                'Details': f'{event.title}: {event.description}'
+            })
+
+    for obj in unified_list:
+        writer.writerow([obj['Event Type'], obj['Date'], obj.get('Details', ''),
+                         obj.get('subject_identifier', ''), obj.get('visit_code', ''),
+                         obj.get('cohort', ''), obj.get('schedule_name', ''), ])
+
+    return response
