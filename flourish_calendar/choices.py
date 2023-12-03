@@ -28,6 +28,7 @@ COLORS = (
     ('blue', 'Blue - Pick ups'),
     ('teal', 'Teal - Leaves: Annual/Sick'),
     ('black', 'Black')
+    # NOTE: Orange/Brown has been used for SQ FU visits/appts.
 )
 
 REPEAT = (

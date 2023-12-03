@@ -39,9 +39,9 @@
 
         
         {% if status_color %}
-            {{subject_identifier}} [{{cohort|upper}}]
+            {{participant_note_wrapper.title}}
         {% else %}
-            <span style="color: black">{{ subject_identifier }} [{{cohort|upper}}]</span>
+            <span style="color: black">{{ participant_note_wrapper.title }}</span>
         {% endif %}
         <span style="margin-top: 3px">{{icon}}</span>
     </button>

@@ -6,15 +6,15 @@ from django.template.loader import render_to_string
 
 class ReminderHtmlBuilder:
     def __init__(self, reminder: Any) -> None:
-        self._reminder = reminder 
+        self._reminder = reminder
 
     @property
     def status(self):
         return self._reminder.status.replace("_", " ").title()
-    
+
     def _reminder_html(self):
         view = None
-        
+
         if self.status_color:
             view = f"<div class='item {self.status_color}'><li>"
         else:
@@ -29,27 +29,27 @@ class ReminderHtmlBuilder:
         view += "</li></div>"
 
         return view
-    
+
     @property
     def status_color(self):
-        
+
         status = None
-        
+
         if self._reminder.color == 'green':
-            status =  'label-success'
+            status = 'label-success'
         elif self._reminder.color == 'red':
             status = 'label-danger'
         elif self._reminder.color == 'grey':
             status = 'label-default'
         elif self._reminder.color == 'yellow':
-            status =  'label-warning'
-            
+            status = 'label-warning'
+
         elif self._reminder.color in \
-            ('purple', 'blue', 'pink', 'teal', 'black'):
+                ('purple', 'blue', 'pink', 'teal', 'black'):
             status = self._reminder.color
-            
+
         return status
-    
+
     @property
     def _dashboard_type(self):
         if len(self._reminder.subject_identifier) == 16:
@@ -61,11 +61,11 @@ class ReminderHtmlBuilder:
     def new_participant_note_wrapper(self):
         participent_note = ParticipantNote()
         return ParticipantNoteModelWrapper(model_obj=participent_note)
-    
+
     def _participant_notes_html(self):
         participant_note_wrapper = ParticipantNoteModelWrapper(model_obj=self._reminder)
         icon = '📝'
-        
+
         if "Follow" in self._reminder.title:
             icon = '➡️'
 
@@ -79,9 +79,9 @@ class ReminderHtmlBuilder:
             'note': self._reminder.description,
             'color': self._reminder.color,
             'date': self._reminder.date,
-            'status_color' : self.status_color,
+            'status_color': self.status_color,
             'dashboard_type': self._dashboard_type,
-            'cohort': getattr(participant_note_wrapper, 'cohort', None)   
+            'cohort': getattr(participant_note_wrapper, 'cohort', None)
         })
 
     def view_build(self):

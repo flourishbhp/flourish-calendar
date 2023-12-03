@@ -35,7 +35,12 @@ class CustomCalendar(HTMLCalendar):
 
         events_per_day = []
         for event in events:
-            if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
+            # If event is future scheduled SQ FU for caregiver do not include on the calendar, only show child.
+            if (isinstance(event, Appointment) and 'sq_fu' in event.schedule_name and
+                event.appt_datetime > get_utcnow()):
+                continue
+            if (isinstance(event, self.children_appointment_cls) and
+                    'sq_fu' not in event.schedule_name) or isinstance(event, Appointment):
                 if event.appt_datetime.day == day:
                     events_per_day.append(event)
             elif isinstance(event, Reminder):
@@ -45,6 +50,10 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, ParticipantNote):
                 if event.date.day == day:
                     events_per_day.append(event)
+            # For ordering include the SQ FU appts after participant notes so they appear at the top
+            elif isinstance(event, self.children_appointment_cls) and 'sq_fu' in event.schedule_name:
+                if event.appt_datetime.day == day:
+                    events_per_day.insert(0, event)
 
         d = ''
         appointment_counter = 0
