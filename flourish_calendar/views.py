@@ -121,20 +121,14 @@ def export_events_as_csv(request):
     unified_list = list()
 
     for event in events:
-        if isinstance(event, (Appointment, children_appointment_cls)):
+        if isinstance(event, children_appointment_cls):
             unified_list.append({
                 'Event Type': 'Appointment',
                 'Date': event.appt_datetime,
                 'subject_identifier': event.subject_identifier,
                 'visit_code': event.visit_code,
-                'cohort': extract_cohort_name(event.schedule_name),
+                'cohort': extract_cohort_name(event.subject_identifier),
                 'schedule_name': event.schedule_name,
-            })
-        elif isinstance(event, Reminder):
-            unified_list.append({
-                'Event Type': 'Reminder',
-                'Date': event.datetime,
-                'Details': f'{event.title}: {event.note}'
             })
         elif isinstance(event, ParticipantNote):
             unified_list.append({
