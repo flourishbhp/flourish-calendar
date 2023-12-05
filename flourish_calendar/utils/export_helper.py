@@ -34,11 +34,11 @@ def collect_events(request):
 
 
 def extract_cohort_name(subject_identifier):
-    cohort_model_cls = django_app.get_model('flourish_child', 'cohort')
+    cohort_model_cls = django_app.get_model('flourish_caregiver', 'cohort')
     try:
-        cohort = cohort_model_cls.objects.get(
+        cohort = cohort_model_cls.objects.filter(
             subject_identifier=subject_identifier).latest('assign_datetime')
     except cohort_model_cls.DoesNotExist:
         return None
     else:
-        return cohort.cohort_name
+        return cohort.name

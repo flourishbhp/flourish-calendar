@@ -135,6 +135,7 @@ def export_events_as_csv(request):
                 'Event Type': 'Participant Note',
                 'Date': event.date,
                 'subject_identifier': event.subject_identifier,
+                'cohort': extract_cohort_name(event.subject_identifier),
                 'Details': f'{event.title}: {event.description}'
             })
 
