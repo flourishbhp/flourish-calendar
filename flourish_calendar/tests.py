@@ -77,7 +77,6 @@ class ReminderDuplicatorTests(TestCase):
 
         post_count = Reminder.objects.count()
 
-        # self.assertEqual(pre_count, post_count)
         self.assertEqual(0, Reminder.objects.filter(
             title='Test_1',
         ).count())
