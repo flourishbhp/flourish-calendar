@@ -1,9 +1,10 @@
 from dateutil.relativedelta import relativedelta
-from django.test import TestCase
-from django.utils import timezone
 from django.apps import apps as django_apps
+from django.test import TestCase, tag
+from django.utils import timezone
+from edc_base import get_utcnow
 
-from flourish_calendar.constants import MONTHLY
+from flourish_calendar.constants import MONTHLY, ONCE
 from flourish_calendar.models import Reminder
 from flourish_calendar.utils.reminder_helper import ReminderDuplicator, WorkingDays
 
@@ -57,3 +58,29 @@ class ReminderDuplicatorTests(TestCase):
         final_reminders_count = Reminder.objects.count()
         number_of_created_reminders = final_reminders_count - initial_reminders_count
         self.assertEqual(number_of_created_reminders, 3)
+
+    @tag('rnd')
+    def test_reminders_not_duplicating(self):
+        reminder = Reminder.objects.create(
+            start_date=get_utcnow(),
+            end_date=get_utcnow(),
+            remainder_time=get_utcnow().time(),
+            title='Test_1',
+            note='Test Note',
+            repeat=ONCE,
+            color='COLOR1')
+
+        pre_count = Reminder.objects.count()
+
+        reminder.title = 'Test_1_updated'
+        reminder.save()
+
+        post_count = Reminder.objects.count()
+
+        # self.assertEqual(pre_count, post_count)
+        self.assertEqual(0, Reminder.objects.filter(
+            title='Test_1',
+        ).count())
+        self.assertEqual(1, Reminder.objects.filter(
+            title='Test_1_updated',
+        ).count())

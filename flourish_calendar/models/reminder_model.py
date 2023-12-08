@@ -2,11 +2,13 @@ import django.utils.timezone
 from django.db import models
 from edc_base.model_mixins import BaseUuidModel
 from edc_protocol.validators import date_not_before_study_start
+from model_utils import FieldTracker
 
 from ..choices import COLORS, REPEAT
 
 
 class Reminder(BaseUuidModel):
+    tracker = FieldTracker()
     datetime = models.DateTimeField(blank=True, null=True)
 
     title = models.CharField(max_length=70)

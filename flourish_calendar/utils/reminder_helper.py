@@ -62,3 +62,21 @@ class ReminderDuplicator(WorkingDays):
         datetime_object = datetime.datetime.combine(date, self.reminder.remainder_time)
         reminder_dict.update({'datetime': datetime_object})
         return Reminder(**reminder_dict)
+
+
+    def remove_duplicates(self):
+        unique_reminders = Reminder.objects.filter(
+            title=self.reminder.title,
+            note=self.reminder.note,
+            repeat=self.reminder.repeat
+        ).values('title', 'note', 'repeat').distinct()
+
+        for unique_reminder in unique_reminders:
+            duplicate_reminders = Reminder.objects.filter(**unique_reminder)
+
+            first_reminder = duplicate_reminders.first()
+            if first_reminder:
+                duplicate_reminders = duplicate_reminders.exclude(pk=first_reminder.pk)
+
+            if duplicate_reminders.exists():
+                duplicate_reminders.delete()
