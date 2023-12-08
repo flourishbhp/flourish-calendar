@@ -22,6 +22,7 @@ def collect_events(request):
 
     participant_notes = ParticipantNote.objects.filter(
         q_objects | Q(title__icontains=search_term or ''),
+        Q(title__icontains='Follow Up Schedule'),
         date__gt=datetime.date.today()
     )
 
