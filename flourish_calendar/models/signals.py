@@ -7,16 +7,13 @@ from .reminder_model import Reminder
 
 @receiver(post_save, sender=Reminder)
 def reminder_post_save(sender, instance, created, **kwargs):
-    if instance.pk is None or instance.tracker.has_changed(
-            'repeat') or instance.tracker.has_changed(
-            'start_date') or instance.tracker.has_changed(
-            'end_date') or instance.tracker.has_changed('remainder_time'):
-        reminder_duplicator = ReminderDuplicator(instance)
-        reminder_duplicator.remove_duplicates()  # Method to remove duplicates
-        reminder_duplicator.repeat()
+    if created:
+        ReminderDuplicator(instance).repeat()
+    else:
+        historical_instance = instance.history.all()
+        if not historical_instance:
+            return
+        ReminderDuplicator(instance).remove_duplicates(historical_instance)
+        ReminderDuplicator(instance).repeat()
 
 
-@receiver(pre_save, sender=Reminder)
-def reminder_pre_save(sender, instance, **kwargs):
-    if instance.pk is not None:
-        Reminder.objects.filter(title=Reminder.objects.get(id=instance.id).title).delete()
