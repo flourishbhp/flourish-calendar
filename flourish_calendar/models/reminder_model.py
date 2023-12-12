@@ -43,6 +43,13 @@ class Reminder(BaseUuidModel):
             note=self.note,
             repeat=self.repeat).count() > 1
 
+    @property
+    def date(self):
+        if self.datetime:
+            return self.datetime.date()
+        else:
+            return None
+
     class Meta(BaseUuidModel.Meta):
         app_label = 'flourish_calendar'
         verbose_name = 'Note'
