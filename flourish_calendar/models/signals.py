@@ -5,13 +5,15 @@ from flourish_calendar.utils import ReminderDuplicator
 from .reminder_model import Reminder
 
 
-@receiver(pre_save, sender=Reminder)
-def reminder_pre_save(sender, instance, *args, **kwargs):
-    Reminder.objects.filter(
-        title=instance.title,
-        note=instance.note, ).delete()
-
-
 @receiver(post_save, sender=Reminder)
 def reminder_post_save(sender, instance, created, **kwargs):
-    ReminderDuplicator(instance).repeat()
+    if created:
+        ReminderDuplicator(instance).repeat()
+    else:
+        historical_instance = instance.history.all()
+        if not historical_instance:
+            return
+        ReminderDuplicator(instance).remove_duplicates(historical_instance)
+        ReminderDuplicator(instance).repeat()
+
+

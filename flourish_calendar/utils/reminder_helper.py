@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from django.apps import apps as django_apps
 from django.forms import model_to_dict
 
-from ..constants import DAILY, MONTHLY, WEEKLY, YEARLY, ONCE
+from ..constants import DAILY, MONTHLY, ONCE, WEEKLY, YEARLY
 from ..models import Reminder
 
 
@@ -62,3 +62,17 @@ class ReminderDuplicator(WorkingDays):
         datetime_object = datetime.datetime.combine(date, self.reminder.remainder_time)
         reminder_dict.update({'datetime': datetime_object})
         return Reminder(**reminder_dict)
+
+    def remove_duplicates(self, history_objs=None):
+        for history_obj in history_objs:
+            unique_reminders = Reminder.objects.filter(
+                title=history_obj.title,
+                note=history_obj.note,
+                repeat=history_obj.repeat
+            ).values('title', 'note', 'repeat').distinct()
+
+            for unique_reminder in unique_reminders:
+                duplicate_reminders = Reminder.objects.filter(**unique_reminder)
+                if duplicate_reminders.exists():
+                    for reminder in duplicate_reminders:
+                        reminder.delete()
