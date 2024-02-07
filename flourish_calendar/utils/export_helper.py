@@ -1,8 +1,9 @@
 import datetime
 
 from django.apps import apps as django_app
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from edc_base.utils import get_utcnow
+from edc_base.utils import age, get_utcnow
 
 from flourish_calendar.models import ParticipantNote
 
@@ -43,3 +44,39 @@ def extract_cohort_name(subject_identifier):
         return None
     else:
         return cohort.name
+
+
+def cohort_objs(subject_identifier):
+    cohort_model = 'flourish_caregiver.cohort'
+    cohort_model_cls = django_app.get_model(cohort_model)
+    return cohort_model_cls.objects.filter(
+        subject_identifier=subject_identifier)
+
+
+def enrolment_cohort(subject_identifier):
+    try:
+        return cohort_objs(subject_identifier).filter(
+            enrollment_cohort=True).latest('assign_datetime')
+    except ObjectDoesNotExist:
+        return None
+
+
+def current_cohort(subject_identifier):
+    try:
+        return cohort_objs(subject_identifier).filter(
+            current_cohort=True).latest('assign_datetime')
+    except ObjectDoesNotExist:
+        return None
+
+
+def get_child_age(subject_identifier=None):
+    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
+    caregiver_child_consent_cls = django_app.get_model(caregiver_child_consent_model)
+    try:
+        consent = caregiver_child_consent_cls.objects.filter(
+            subject_identifier=subject_identifier).latest('consent_datetime')
+    except caregiver_child_consent_cls.DoesNotExist:
+        return None
+    else:
+        _age = age(consent.child_dob, get_utcnow())
+        return _age.years + _age.months / 12
