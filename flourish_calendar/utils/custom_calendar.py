@@ -216,7 +216,7 @@ class CustomCalendar(HTMLCalendar):
             fu_appts = self.children_appointment_cls.objects.filter(
                 Q(schedule_name__icontains='_fu') & ~Q(schedule_name__icontains='qt'),
                 user_modified='flourish',
-                appt_datetime__gte=get_utcnow(),
+                appt_status=NEW_APPT,
                 appt_datetime__year=self.year,
                 appt_datetime__month=self.month, )
 
