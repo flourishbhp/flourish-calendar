@@ -2,7 +2,7 @@ import datetime
 
 from django.apps import apps as django_app
 from django.db.models import Q
-from edc_base.utils import get_utcnow
+from edc_base.utils import age, get_utcnow
 
 from flourish_calendar.models import ParticipantNote
 
@@ -42,4 +42,13 @@ def extract_cohort_name(subject_identifier):
     except cohort_model_cls.DoesNotExist:
         return None
     else:
-        return cohort.name
+        return cohort
+
+
+def participant_age(subject_identifier):
+    cohort_obj = extract_cohort_name(subject_identifier)
+    if cohort_obj:
+        caregiver_child_consent_obj = cohort_obj.caregiver_child_consent
+        if caregiver_child_consent_obj:
+            child_age = age(caregiver_child_consent_obj.child_dob, get_utcnow())
+            return round(child_age.years + child_age.months/12, 1)

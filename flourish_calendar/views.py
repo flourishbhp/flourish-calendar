@@ -12,7 +12,7 @@ from .model_wrappers import ParticipantNoteModelWrapper, ReminderModelWrapper
 from .models import ParticipantNote, Reminder
 from .utils import AppointmentHelper, CustomCalendar, DateHelper
 from .utils.export_helper import children_appointment_cls, collect_events, \
-    extract_cohort_name
+    extract_cohort_name, participant_age
 
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
@@ -102,8 +102,9 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
 
 def export_events_as_csv(request):
-    csv_headers = ['Event Type', 'Event Date and Time', 'Details', 'Subject Identifier',
-                   'Visit Code', 'Cohort', 'Schedule Name']
+    csv_headers = ['Event Type', 'Event Date and Time', 'Description',
+                   'Subject Identifier',
+                   'Child Age', 'Visit Code', 'Cohort', 'Schedule Name']
 
     # Generate datetime stamp for file name
     timestamp_str = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -127,21 +128,26 @@ def export_events_as_csv(request):
                 'Date': event.appt_datetime,
                 'subject_identifier': event.subject_identifier,
                 'visit_code': event.visit_code,
-                'cohort': extract_cohort_name(event.subject_identifier),
+                'cohort': getattr(extract_cohort_name(event.subject_identifier),
+                                  'name', None),
                 'schedule_name': event.schedule_name,
+                'child_age': participant_age(event.subject_identifier)
             })
         elif isinstance(event, ParticipantNote):
             unified_list.append({
                 'Event Type': 'Participant Note',
                 'Date': event.date,
                 'subject_identifier': event.subject_identifier,
-                'cohort': extract_cohort_name(event.subject_identifier),
-                'Details': f'{event.title}: {event.description}'
+                'cohort': getattr(extract_cohort_name(event.subject_identifier),
+                                  'name', None),
+                'description': f'{event.title}',
+                'child_age': participant_age(event.subject_identifier)
             })
 
     for obj in unified_list:
-        writer.writerow([obj['Event Type'], obj['Date'], obj.get('Details', ''),
-                         obj.get('subject_identifier', ''), obj.get('visit_code', ''),
-                         obj.get('cohort', ''), obj.get('schedule_name', ''), ])
+        writer.writerow([obj['Event Type'], obj['Date'], obj.get('description', ''),
+                         obj.get('subject_identifier', ''), obj.get('child_age', ''),
+                         obj.get('visit_code', ''), obj.get('cohort', ''),
+                         obj.get('schedule_name', ''), ])
 
     return response
