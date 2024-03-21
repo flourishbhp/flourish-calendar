@@ -19,9 +19,14 @@ class ParticipantNoteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.title = self.initial.get('title', None)
+        subject_identifier = self.initial.get('subject_identifier', None)
 
         if self.title and ('follow up' in self.title.lower() or 'comment' in self.title.lower()):
             self.fields['title'].widget.attrs['readonly'] = True
+        if self.fu_contact_exists(subject_identifier):
+            self.fields['date'].widget = forms.DateInput(
+                attrs={'readonly': 'readonly'})
+        
 
     @property
     def subject_consent_model_cls(self):
@@ -35,10 +40,19 @@ class ParticipantNoteForm(forms.ModelForm):
     def schedule_history_cls(self):
         return django_apps.get_model(self.schedule_history_model)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @property
+    def fu_contact_cls(self):
+        return django_apps.get_model('flourish_follow.contact')
 
-        self.fields['title'].initial = 'Follow Up Schedule'
+    def fu_contact_exists(self, subject_identifier):
+        """ Checks if there participant is being scheduled for FU using
+            the contact form. If so, then make date readonly so there's
+            a single data entry point for scheduling.
+            @param subject_identifier: child's identifier 
+        """
+        return self.fu_contact_cls.objects.filter(
+            subject_identifier=subject_identifier,
+            appt_date__isnull=False).exists()
 
     def clean(self):
         """
