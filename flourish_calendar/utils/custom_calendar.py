@@ -35,12 +35,7 @@ class CustomCalendar(HTMLCalendar):
 
         events_per_day = []
         for event in events:
-            # If event is future scheduled SQ FU for caregiver do not include on the calendar, only show child.
-            if (isinstance(event, Appointment) and 'sq_fu' in event.schedule_name and
-                event.appt_datetime > get_utcnow()):
-                continue
-            if (isinstance(event, self.children_appointment_cls) and
-                    'sq_fu' not in event.schedule_name) or isinstance(event, Appointment):
+            if isinstance(event, self.children_appointment_cls) or isinstance(event, Appointment):
                 if event.appt_datetime.day == day:
                     events_per_day.append(event)
             elif isinstance(event, Reminder):
@@ -50,10 +45,6 @@ class CustomCalendar(HTMLCalendar):
             elif isinstance(event, ParticipantNote):
                 if event.date.day == day:
                     events_per_day.append(event)
-            # For ordering include the SQ FU appts after participant notes so they appear at the top
-            elif isinstance(event, self.children_appointment_cls) and 'sq_fu' in event.schedule_name:
-                if event.appt_datetime.day == day:
-                    events_per_day.insert(0, event)
 
         d = ''
         appointment_counter = 0
@@ -213,18 +204,10 @@ class CustomCalendar(HTMLCalendar):
                 date__year=self.year, date__month=self.month
             )
 
-            fu_appts = self.children_appointment_cls.objects.filter(
-                Q(schedule_name__icontains='_fu') & ~Q(schedule_name__icontains='qt'),
-                user_modified='flourish',
-                appt_datetime__gte=get_utcnow(),
-                appt_datetime__year=self.year,
-                appt_datetime__month=self.month, )
-
             events.extend(list(reminders))
             events.extend(list(participant_notes))
             events.extend(list(caregiver_appointments))
             events.extend(list(child_appointments))
-            events.extend(list(fu_appts))
 
         events = list(filter(lambda e: 'comment' not in getattr(e, 'title', '').lower(),
                              events))
