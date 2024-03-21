@@ -35,17 +35,6 @@ def collect_events(request):
     return list(fu_appts) + list(participant_notes)
 
 
-def extract_cohort_name(subject_identifier):
-    cohort_model_cls = django_app.get_model('flourish_caregiver', 'cohort')
-    try:
-        cohort = cohort_model_cls.objects.filter(
-            subject_identifier=subject_identifier).latest('assign_datetime')
-    except cohort_model_cls.DoesNotExist:
-        return None
-    else:
-        return cohort.name
-
-
 def cohort_objs(subject_identifier):
     cohort_model = 'flourish_caregiver.cohort'
     cohort_model_cls = django_app.get_model(cohort_model)
@@ -70,13 +59,9 @@ def current_cohort(subject_identifier):
 
 
 def get_child_age(subject_identifier=None):
-    caregiver_child_consent_model = 'flourish_caregiver.caregiverchildconsent'
-    caregiver_child_consent_cls = django_app.get_model(caregiver_child_consent_model)
-    try:
-        consent = caregiver_child_consent_cls.objects.filter(
-            subject_identifier=subject_identifier).latest('consent_datetime')
-    except caregiver_child_consent_cls.DoesNotExist:
-        return None
-    else:
-        _age = age(consent.child_dob, get_utcnow())
-        return _age.years + _age.months / 12
+    _current_cohort = current_cohort(subject_identifier)
+    if _current_cohort:
+        caregiver_child_consent_obj = _current_cohort.caregiver_child_consent
+        if caregiver_child_consent_obj:
+            child_age = age(caregiver_child_consent_obj.child_dob, get_utcnow())
+            return round(child_age.years + child_age.months / 12, 1)
