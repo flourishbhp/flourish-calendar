@@ -59,8 +59,11 @@ def current_cohort(subject_identifier):
 
 
 def get_child_age(subject_identifier=None):
-    _current_cohort = current_cohort(subject_identifier)
-    if _current_cohort:
+    try:
+        _current_cohort = cohort_objs(subject_identifier).latest('assign_datetime')
+    except ObjectDoesNotExist:
+        return None
+    else:
         caregiver_child_consent_obj = _current_cohort.caregiver_child_consent
         if caregiver_child_consent_obj:
             child_age = age(caregiver_child_consent_obj.child_dob, get_utcnow())
