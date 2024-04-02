@@ -151,7 +151,7 @@ def export_events_as_csv(request):
                 'current_cohort': current_cohort_name,
                 'enrolment_cohort': enrolment_cohort_name,
                 'title': f'{event.title}',
-                'description': f'{event.title}',
+                'description': f'{event.description}',
                 'exposure_status': exposure_status,
             })
 
