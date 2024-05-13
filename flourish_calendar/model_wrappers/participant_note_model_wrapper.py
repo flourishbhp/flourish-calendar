@@ -11,10 +11,6 @@ class ParticipantNoteModelWrapper(ModelWrapper):
     cohort_model = 'flourish_caregiver.cohort'
 
     @property
-    def title(self):
-        return self.object.title
-
-    @property
     def comments(self):
         commments = self.model_cls.objects.filter(title__icontains='comment')
         return commments
@@ -45,5 +41,7 @@ class ParticipantNoteModelWrapper(ModelWrapper):
     def title(self):
         if 'follow' in self.object.title.lower() and self.cohort:
             return f'{self.object.subject_identifier}[{self.cohort.upper()}]'
+        elif 'PF to Flourish Enrol' in self.object.title:
+            return f'{self.object.subject_identifier}[{self.object.title.replace(" Enrol", "")}]'
         else:
             return self.object.title
