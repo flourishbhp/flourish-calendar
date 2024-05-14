@@ -66,7 +66,7 @@ class ReminderHtmlBuilder:
         participant_note_wrapper = ParticipantNoteModelWrapper(model_obj=self._reminder)
         icon = '📝'
 
-        if "Follow" in self._reminder.title:
+        if "Follow" in self._reminder.title or "PF to Flourish Enrol" in self._reminder.title:
             icon = '➡️'
 
         return render_to_string('flourish_calendar/follow_appointment_template.html', {

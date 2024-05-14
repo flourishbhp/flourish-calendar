@@ -12,7 +12,7 @@ from .model_wrappers import ParticipantNoteModelWrapper, ReminderModelWrapper
 from .models import ParticipantNote, Reminder
 from .utils import AppointmentHelper, CustomCalendar, DateHelper
 from .utils.export_helper import children_appointment_cls, collect_events, \
-    extract_cohort_name
+    current_cohort, enrolment_cohort, get_child_age
 
 
 class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
@@ -102,8 +102,9 @@ class CalendarView(NavbarViewMixin, EdcBaseViewMixin, generic.ListView):
 
 
 def export_events_as_csv(request):
-    csv_headers = ['Event Type', 'Event Date and Time', 'Details', 'Subject Identifier',
-                   'Visit Code', 'Cohort', 'Schedule Name']
+    csv_headers = ['Event Type', 'Event Date', 'Subject Identifier', 'Child Age',
+                   'Current Cohort', 'Enrolment Cohort', 'Exposure Status', 'Title',
+                   'Description']
 
     # Generate datetime stamp for file name
     timestamp_str = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
@@ -121,27 +122,44 @@ def export_events_as_csv(request):
     unified_list = list()
 
     for event in events:
+        _enrolment_cohort = enrolment_cohort(event.subject_identifier)
+        enrolment_cohort_name = _enrolment_cohort.name if _enrolment_cohort else None
+
+        _current_cohort = current_cohort(event.subject_identifier)
+        current_cohort_name = _current_cohort.name if _current_cohort else None
+
+        exposure_status = _current_cohort.exposure_status if _current_cohort else None
+
         if isinstance(event, children_appointment_cls):
             unified_list.append({
-                'Event Type': 'Appointment',
-                'Date': event.appt_datetime,
+                'event_type': 'Appointment',
+                'date': event.appt_datetime.date(),
                 'subject_identifier': event.subject_identifier,
-                'visit_code': event.visit_code,
-                'cohort': extract_cohort_name(event.subject_identifier),
-                'schedule_name': event.schedule_name,
+                'title': f'Appointment: {event.visit_code}',
+                'child_age': get_child_age(event.subject_identifier),
+                'description': '',
+                'current_cohort': current_cohort_name,
+                'enrolment_cohort': enrolment_cohort_name,
+                'exposure_status': exposure_status,
             })
         elif isinstance(event, ParticipantNote):
             unified_list.append({
-                'Event Type': 'Participant Note',
-                'Date': event.date,
+                'event_type': 'Participant Note',
+                'date': event.date,
                 'subject_identifier': event.subject_identifier,
-                'cohort': extract_cohort_name(event.subject_identifier),
-                'Details': f'{event.title}: {event.description}'
+                'child_age': get_child_age(event.subject_identifier),
+                'current_cohort': current_cohort_name,
+                'enrolment_cohort': enrolment_cohort_name,
+                'title': f'{event.title}',
+                'description': f'{event.description}',
+                'exposure_status': exposure_status,
             })
 
     for obj in unified_list:
-        writer.writerow([obj['Event Type'], obj['Date'], obj.get('Details', ''),
-                         obj.get('subject_identifier', ''), obj.get('visit_code', ''),
-                         obj.get('cohort', ''), obj.get('schedule_name', ''), ])
+        writer.writerow(
+            [obj.get('event_type'), obj.get('date'), obj.get('subject_identifier'),
+             obj.get('child_age'), obj.get('current_cohort'),
+             obj.get('enrolment_cohort'), obj.get('exposure_status'),
+             obj.get('title'), obj.get('description')])
 
     return response
