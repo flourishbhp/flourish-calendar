@@ -53,9 +53,13 @@ class ParticipantNoteForm(forms.ModelForm):
                 'schedule_name', flat=True)
 
     def pf_booking_check(self, subject_identifier):
-        consent = self.child_consent_model_cls.objects.filter(
-            subject_identifier=subject_identifier).latest('consent_datetime')
-        return 'P' in consent.study_child_identifier
+        try:
+            consent = self.child_consent_model_cls.objects.filter(
+                subject_identifier=subject_identifier).latest('consent_datetime')
+        except self.child_consent_model_cls.DoesNotExist:
+            return None
+        else:
+            return 'P' in consent.study_child_identifier
 
     @property
     def fu_contact_cls(self):
