@@ -55,7 +55,8 @@ class ParticipantNoteForm(forms.ModelForm):
     def pf_booking_check(self, subject_identifier):
         try:
             consent = self.child_consent_model_cls.objects.filter(
-                subject_identifier=subject_identifier).latest('consent_datetime')
+                subject_identifier=subject_identifier,
+                study_child_identifier__isnull=False).latest('consent_datetime')
         except self.child_consent_model_cls.DoesNotExist:
             return None
         else:
