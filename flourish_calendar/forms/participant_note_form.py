@@ -15,6 +15,8 @@ class ParticipantNoteForm(forms.ModelForm):
 
     schedule_history_model = 'edc_visit_schedule.subjectschedulehistory'
 
+    cohort_schedules_model = 'flourish_caregiver.cohortschedules'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -26,7 +28,6 @@ class ParticipantNoteForm(forms.ModelForm):
         if self.fu_contact_exists(subject_identifier):
             self.fields['date'].widget = forms.DateInput(
                 attrs={'readonly': 'readonly'})
-        
 
     @property
     def subject_consent_model_cls(self):
@@ -41,6 +42,27 @@ class ParticipantNoteForm(forms.ModelForm):
         return django_apps.get_model(self.schedule_history_model)
 
     @property
+    def cohort_schedules_model_cls(self):
+        return django_apps.get_model(self.cohort_schedules_model)
+
+    @property
+    def enrolment_schedule_names(self):
+        return self.cohort_schedules_model_cls.objects.filter(
+            schedule_type='enrollment',
+            onschedule_model__startswith='flourish_child').values_list(
+                'schedule_name', flat=True)
+
+    def pf_booking_check(self, subject_identifier):
+        try:
+            consent = self.child_consent_model_cls.objects.filter(
+                subject_identifier=subject_identifier,
+                study_child_identifier__isnull=False).latest('consent_datetime')
+        except self.child_consent_model_cls.DoesNotExist:
+            return None
+        else:
+            return 'P' in consent.study_child_identifier
+
+    @property
     def fu_contact_cls(self):
         return django_apps.get_model('flourish_follow.contact')
 
@@ -48,7 +70,7 @@ class ParticipantNoteForm(forms.ModelForm):
         """ Checks if there participant is being scheduled for FU using
             the contact form. If so, then make date readonly so there's
             a single data entry point for scheduling.
-            @param subject_identifier: child's identifier 
+            @param subject_identifier: child's identifier
         """
         return self.fu_contact_cls.objects.filter(
             subject_identifier=subject_identifier,
@@ -82,12 +104,17 @@ class ParticipantNoteForm(forms.ModelForm):
                 {'subject_identifier':
                  'Subject identifier for child/caregiver does not exist'})
 
-        if self.cleaned_data.get('title', '') == 'Follow Up Schedule':
-            onschedules = self.schedule_history_cls.objects.onschedules(
-                subject_identifier=subject_identifier)
+        is_pf_child = self.pf_booking_check(subject_identifier)
+
+        if (self.cleaned_data.get('title', '') == 'Follow Up Schedule' and
+                not is_pf_child):
+            onschedules = self.schedule_history_cls.objects.filter(
+                subject_identifier=subject_identifier,
+                schedule_name__in=self.enrolment_schedule_names)
             if onschedules and date:
                 start_dt = datetime.date(2023, 1, 1)
-                enrolment_dt = onschedules[0].onschedule_datetime
+                enrolment_dt = onschedules.earliest(
+                    'onschedule_datetime').onschedule_datetime
                 followup_dt = enrolment_dt + relativedelta(years=1)
                 lower_bound = (followup_dt - relativedelta(days=45)).date()
                 upper_bound = (followup_dt + relativedelta(days=45)).date()

@@ -25,7 +25,7 @@ class Reminder(BaseUuidModel):
             date_not_before_study_start],
     )
 
-    remainder_time = models.TimeField()
+    remainder_time = models.TimeField(verbose_name='Reminder time')
 
     note = models.TextField(blank=True, null=True)
 
